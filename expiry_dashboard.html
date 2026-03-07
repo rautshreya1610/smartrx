@@ -1,0 +1,914 @@
+<!DOCTYPE html>
+<html lang="en" id="html-root">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>SmartRx — Smart Expiry Prediction Dashboard</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Geist:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
+<style>
+/* ============================================================
+   DESIGN TOKENS — matches SmartRx main app exactly
+============================================================ */
+:root{
+  --bg:       #f4f1eb;
+  --surface:  #ede9e1;
+  --card:     #ffffff;
+  --border:   #d4cfc5;
+  --border2:  #e8e3d9;
+  --forest:   #1a3a2a;
+  --green:    #2d6a4f;
+  --green-lt: #52b788;
+  --teal:     #40916c;
+  --amber:    #d4830a;
+  --red:      #c0392b;
+  --orange:   #d46113;
+  --text:     #1c1c1c;
+  --text2:    #4a4a4a;
+  --text3:    #7a7a7a;
+  --shadow:   0 1px 3px rgba(0,0,0,.08), 0 4px 16px rgba(0,0,0,.06);
+  --shadow2:  0 2px 8px rgba(0,0,0,.12), 0 8px 32px rgba(0,0,0,.08);
+  --radius:   12px;
+  --radius2:  8px;
+  --head:     'Instrument Serif', Georgia, serif;
+  --body:     'Geist', 'Helvetica Neue', sans-serif;
+  --trans:    .18s ease;
+}
+[data-theme="dark"]{
+  --bg:      #0f1a14;
+  --surface: #162010;
+  --card:    #1c2b1e;
+  --border:  #2a3d2c;
+  --border2: #233227;
+  --forest:  #74c99a;
+  --green:   #52b788;
+  --green-lt:#74c99a;
+  --teal:    #63c192;
+  --text:    #e8f0ea;
+  --text2:   #b0c8b8;
+  --text3:   #6e9478;
+  --shadow:  0 1px 3px rgba(0,0,0,.3), 0 4px 16px rgba(0,0,0,.2);
+  --shadow2: 0 2px 8px rgba(0,0,0,.4), 0 8px 32px rgba(0,0,0,.3);
+}
+[data-theme="dark"] body::before{
+  background-image:radial-gradient(circle,rgba(82,183,136,.07) 1px,transparent 1px);
+}
+[data-theme="dark"] nav{ background:rgba(15,26,20,.92); }
+[data-theme="dark"] .pred-table thead tr{ background:var(--surface); }
+[data-theme="dark"] .risk-badge.SAFE{ color:#4ade80; border-color:#166534; }
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{
+  background:var(--bg);color:var(--text);
+  font-family:var(--body);min-height:100vh;
+}
+/* dot grid background */
+body::before{
+  content:'';position:fixed;inset:0;
+  background-image:radial-gradient(circle,rgba(45,106,79,.12) 1px,transparent 1px);
+  background-size:28px 28px;pointer-events:none;z-index:0;
+}
+
+/* ── NAV ── */
+nav{
+  position:sticky;top:0;z-index:200;
+  background:rgba(244,241,235,.92);
+  backdrop-filter:blur(20px);
+  border-bottom:1px solid var(--border);
+}
+.nav-inner{
+  max-width:1280px;margin:0 auto;
+  padding:0 1.5rem;height:60px;
+  display:flex;align-items:center;justify-content:space-between;gap:1rem;
+}
+.logo{
+  font-family:var(--head);font-size:1.4rem;
+  color:var(--forest);display:flex;align-items:center;gap:.5rem;
+  text-decoration:none;
+}
+.logo-dot{width:10px;height:10px;border-radius:50%;background:var(--green-lt);display:inline-block;}
+.nav-right{display:flex;align-items:center;gap:.75rem;}
+.back-btn{
+  display:flex;align-items:center;gap:.4rem;
+  padding:.38rem .9rem;border-radius:8px;
+  border:1px solid var(--border);background:var(--card);
+  color:var(--text2);font-family:var(--body);font-size:.82rem;
+  font-weight:500;cursor:pointer;text-decoration:none;
+  transition:all var(--trans);
+}
+.back-btn:hover{border-color:var(--teal);color:var(--teal);}
+
+/* ── Language Selector ── */
+.lang-sel{
+  display:flex;gap:2px;background:var(--surface);
+  border:1px solid var(--border);border-radius:10px;padding:3px;
+}
+.lang-btn{
+  padding:.3rem .7rem;border-radius:7px;border:none;
+  cursor:pointer;font-family:var(--body);font-size:.75rem;font-weight:500;
+  color:var(--text3);background:transparent;transition:all var(--trans);
+}
+.lang-btn.active{background:var(--card);color:var(--forest);box-shadow:var(--shadow);font-weight:600;}
+
+/* ── CONTAINER ── */
+.container{max-width:1280px;margin:0 auto;padding:2rem 1.5rem;position:relative;z-index:1;}
+
+/* ── PAGE HEADER ── */
+.page-header{margin-bottom:2rem;}
+.page-eyebrow{
+  font-size:.72rem;font-weight:600;letter-spacing:.14em;
+  text-transform:uppercase;color:var(--teal);margin-bottom:.5rem;
+  display:flex;align-items:center;gap:.5rem;
+}
+.page-eyebrow::before{content:'';display:block;width:20px;height:2px;background:var(--green-lt);}
+.page-title{
+  font-family:var(--head);font-size:clamp(1.8rem,4vw,2.8rem);
+  color:var(--forest);line-height:1.1;margin-bottom:.5rem;
+}
+.page-title em{color:var(--teal);font-style:italic;}
+.page-sub{font-size:.9rem;color:var(--text3);max-width:520px;line-height:1.6;}
+
+/* ── SUMMARY GRID ── */
+.summary-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(150px,1fr));
+  gap:.75rem;margin-bottom:2rem;
+}
+.sum-card{
+  background:var(--card);border:1px solid var(--border);
+  border-radius:var(--radius);padding:1.1rem 1.25rem;
+  box-shadow:var(--shadow);
+  transition:transform var(--trans),box-shadow var(--trans);
+  position:relative;overflow:hidden;
+}
+.sum-card:hover{transform:translateY(-2px);box-shadow:var(--shadow2);}
+.sum-card::before{
+  content:'';position:absolute;top:0;left:0;right:0;height:3px;
+}
+.sum-card.critical::before{background:var(--red);}
+.sum-card.high::before{background:var(--orange);}
+.sum-card.medium::before{background:var(--amber);}
+.sum-card.safe::before{background:var(--green-lt);}
+.sum-card.loss::before{background:var(--teal);}
+.sum-num{
+  font-family:var(--head);font-size:2rem;line-height:1;
+  margin-bottom:.3rem;
+}
+.sum-num.red{color:var(--red);}
+.sum-num.orange{color:var(--orange);}
+.sum-num.amber{color:var(--amber);}
+.sum-num.green{color:var(--green-lt);}
+.sum-num.teal{color:var(--teal);}
+.sum-lbl{font-size:.7rem;color:var(--text3);text-transform:uppercase;letter-spacing:.07em;font-weight:600;}
+
+/* ── TOOLBAR ── */
+.toolbar{
+  display:flex;align-items:center;justify-content:space-between;
+  flex-wrap:wrap;gap:.75rem;margin-bottom:1.5rem;
+}
+.filter-group{
+  display:flex;gap:2px;background:var(--surface);
+  border:1px solid var(--border);border-radius:10px;padding:3px;
+  flex-wrap:wrap;
+}
+.filter-btn{
+  padding:.35rem .85rem;border-radius:7px;border:none;cursor:pointer;
+  font-family:var(--body);font-size:.78rem;font-weight:500;
+  background:transparent;color:var(--text3);transition:all var(--trans);
+}
+.filter-btn.active{background:var(--card);color:var(--forest);box-shadow:var(--shadow);font-weight:600;}
+.search-inp{
+  padding:.45rem .9rem;background:var(--card);border:1px solid var(--border);
+  border-radius:9px;font-family:var(--body);font-size:.85rem;
+  color:var(--text);outline:none;transition:border-color var(--trans);
+  min-width:200px;
+}
+.search-inp:focus{border-color:var(--teal);}
+.refresh-btn{
+  display:flex;align-items:center;gap:.4rem;
+  padding:.45rem 1rem;background:var(--forest);color:#fff;
+  border:none;border-radius:9px;cursor:pointer;
+  font-family:var(--body);font-size:.82rem;font-weight:600;
+  transition:background var(--trans);
+}
+.refresh-btn:hover{background:var(--green);}
+
+/* ── TABLE ── */
+.table-wrap{
+  background:var(--card);border:1px solid var(--border);
+  border-radius:var(--radius);box-shadow:var(--shadow);
+  overflow:hidden;
+}
+.pred-table{width:100%;border-collapse:collapse;font-size:.83rem;}
+.pred-table thead tr{background:var(--surface);}
+.pred-table th{
+  padding:.75rem 1rem;text-align:left;
+  font-size:.68rem;font-weight:700;color:var(--text3);
+  text-transform:uppercase;letter-spacing:.08em;
+  border-bottom:2px solid var(--border);white-space:nowrap;
+}
+.pred-table td{
+  padding:.75rem 1rem;border-bottom:1px solid var(--border2);
+  vertical-align:middle;
+}
+.pred-table tr:last-child td{border-bottom:none;}
+.pred-table tbody tr{transition:background var(--trans);}
+.pred-table tbody tr:hover td{background:rgba(64,145,108,.04);}
+
+/* table cells */
+.med-cell{font-weight:600;color:var(--forest);}
+.med-sub{font-size:.72rem;color:var(--text3);margin-top:.15rem;}
+.risk-bar-wrap{width:80px;}
+.risk-bar-track{height:6px;border-radius:3px;background:var(--border2);margin-bottom:.25rem;}
+.risk-bar-fill{height:100%;border-radius:3px;transition:width .8s ease;}
+.risk-score-num{font-size:.7rem;color:var(--text3);}
+
+/* Risk badges */
+.risk-badge{
+  display:inline-block;padding:.25rem .7rem;border-radius:6px;
+  font-size:.68rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;
+}
+.risk-badge.CRITICAL{background:rgba(192,57,43,.1);color:var(--red);border:1px solid rgba(192,57,43,.2);}
+.risk-badge.HIGH    {background:rgba(212,97,19,.1);color:var(--orange);border:1px solid rgba(212,97,19,.2);}
+.risk-badge.MEDIUM  {background:rgba(212,131,10,.1);color:var(--amber);border:1px solid rgba(212,131,10,.2);}
+.risk-badge.LOW     {background:rgba(64,145,108,.1);color:var(--teal);border:1px solid rgba(64,145,108,.2);}
+.risk-badge.SAFE    {background:rgba(82,183,136,.1);color:var(--green-lt);border:1px solid rgba(82,183,136,.2);}
+
+/* Action badges — now clickable */
+.action-badge{
+  display:inline-flex;align-items:center;gap:.3rem;
+  padding:.28rem .75rem;border-radius:20px;
+  font-size:.7rem;font-weight:600;white-space:nowrap;
+  cursor:pointer;transition:transform .15s ease, box-shadow .15s ease;
+  border:1px solid transparent;
+}
+.action-badge:hover{transform:scale(1.05);box-shadow:0 2px 8px rgba(0,0,0,.12);}
+.action-badge:active{transform:scale(.97);}
+.action-badge.DISCARD        {background:#fef2f2;color:#991b1b;border-color:#fecaca;}
+.action-badge.URGENT_DISCOUNT{background:#fff7ed;color:#c2410c;border-color:#fed7aa;}
+.action-badge.DISCOUNT       {background:#fffbeb;color:#92400e;border-color:#fde68a;}
+.action-badge.MONITOR        {background:#eff6ff;color:#1d4ed8;border-color:#bfdbfe;}
+.action-badge.NO_ACTION      {background:#f0fdf4;color:#166534;border-color:#bbf7d0;}
+
+/* ── DETAIL MODAL ── */
+.modal-overlay{
+  position:fixed;inset:0;background:rgba(0,0,0,.45);
+  backdrop-filter:blur(4px);z-index:1000;
+  display:flex;align-items:center;justify-content:center;
+  padding:1rem;opacity:0;pointer-events:none;
+  transition:opacity .2s ease;
+}
+.modal-overlay.open{opacity:1;pointer-events:all;}
+.modal{
+  background:var(--card);border:1px solid var(--border);
+  border-radius:18px;box-shadow:0 20px 60px rgba(0,0,0,.2);
+  width:100%;max-width:520px;max-height:90vh;overflow-y:auto;
+  transform:translateY(20px) scale(.97);
+  transition:transform .25s ease;
+}
+.modal-overlay.open .modal{transform:translateY(0) scale(1);}
+.modal-header{
+  padding:1.4rem 1.5rem 1rem;
+  border-bottom:1px solid var(--border2);
+  display:flex;align-items:flex-start;justify-content:space-between;gap:1rem;
+}
+.modal-title{font-family:var(--head);font-size:1.25rem;color:var(--forest);line-height:1.2;}
+.modal-close{
+  background:var(--surface);border:none;width:30px;height:30px;
+  border-radius:50%;cursor:pointer;font-size:1rem;color:var(--text3);
+  display:flex;align-items:center;justify-content:center;flex-shrink:0;
+  transition:background var(--trans);
+}
+.modal-close:hover{background:var(--border);}
+.modal-body{padding:1.25rem 1.5rem;}
+.modal-section{margin-bottom:1.25rem;}
+.modal-section-title{
+  font-size:.68rem;font-weight:700;color:var(--text3);
+  text-transform:uppercase;letter-spacing:.1em;margin-bottom:.65rem;
+  display:flex;align-items:center;gap:.4rem;
+}
+.modal-section-title::after{content:'';flex:1;height:1px;background:var(--border2);}
+.modal-grid{display:grid;grid-template-columns:1fr 1fr;gap:.6rem;}
+.modal-stat{
+  background:var(--surface);border-radius:10px;padding:.75rem 1rem;
+}
+.modal-stat-val{font-weight:700;font-size:1.1rem;color:var(--forest);margin-bottom:.15rem;}
+.modal-stat-lbl{font-size:.7rem;color:var(--text3);}
+.rec-list{display:flex;flex-direction:column;gap:.5rem;}
+.rec-item{
+  display:flex;align-items:flex-start;gap:.6rem;
+  background:var(--surface);border-radius:10px;padding:.75rem 1rem;
+  font-size:.83rem;color:var(--text2);line-height:1.5;
+}
+.rec-icon{font-size:1rem;flex-shrink:0;margin-top:.05rem;}
+.modal-footer{
+  padding:1rem 1.5rem;border-top:1px solid var(--border2);
+  display:flex;justify-content:flex-end;gap:.5rem;
+}
+.modal-btn{
+  padding:.5rem 1.2rem;border-radius:9px;border:none;
+  font-family:var(--body);font-size:.83rem;font-weight:600;
+  cursor:pointer;transition:all var(--trans);
+}
+.modal-btn.secondary{background:var(--surface);color:var(--text2);border:1px solid var(--border);}
+.modal-btn.secondary:hover{border-color:var(--teal);color:var(--teal);}
+.modal-btn.primary{background:var(--forest);color:#fff;}
+.modal-btn.primary:hover{background:var(--green);}
+
+/* Waste indicator */
+.waste-col{text-align:right;}
+.waste-num{font-weight:600;font-size:.88rem;}
+.waste-num.high{color:var(--red);}
+.waste-num.med {color:var(--amber);}
+.waste-num.ok  {color:var(--green-lt);}
+.loss-num{font-size:.72rem;color:var(--text3);}
+
+/* ── LOADING / EMPTY ── */
+.loading{
+  display:flex;flex-direction:column;align-items:center;
+  justify-content:center;padding:5rem 2rem;gap:1rem;color:var(--text3);
+}
+.spinner{
+  width:32px;height:32px;
+  border:3px solid rgba(64,145,108,.2);
+  border-top-color:var(--teal);
+  border-radius:50%;animation:spin .7s linear infinite;
+}
+@keyframes spin{to{transform:rotate(360deg)}}
+.loading-text{font-size:.9rem;font-weight:500;}
+.loading-sub{font-size:.78rem;color:var(--text3);}
+
+/* ── TOAST ── */
+#toasts{position:fixed;bottom:1.5rem;right:1.5rem;z-index:9999;display:flex;flex-direction:column;gap:.4rem;}
+.toast{
+  background:var(--card);border:1px solid var(--border);border-radius:10px;
+  padding:.7rem 1.1rem;display:flex;align-items:center;gap:.6rem;
+  font-size:.83rem;min-width:240px;box-shadow:var(--shadow2);
+  animation:toastIn .25s ease;
+}
+@keyframes toastIn{from{opacity:0;transform:translateY(10px)}}
+.toast.ok {border-left:3px solid var(--green-lt);}
+.toast.err{border-left:3px solid var(--red);}
+
+/* ── SCROLLBAR ── */
+::-webkit-scrollbar{width:5px;height:5px;}
+::-webkit-scrollbar-track{background:var(--bg);}
+::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px;}
+
+/* ── RESPONSIVE ── */
+@media(max-width:768px){
+  .pred-table th:nth-child(5),
+  .pred-table td:nth-child(5),
+  .pred-table th:nth-child(6),
+  .pred-table td:nth-child(6){display:none;}
+  .summary-grid{grid-template-columns:repeat(2,1fr);}
+}
+</style>
+</head>
+<body>
+
+<!-- ── NAV ── -->
+<nav>
+  <div class="nav-inner">
+    <a class="logo" href="http://127.0.0.1:5000">
+      <span class="logo-dot"></span> SmartRx
+    </a>
+    <div class="nav-right">
+      <!-- Language Selector -->
+      <div class="lang-sel">
+        <button class="lang-btn active" onclick="setLang('en',this)">EN</button>
+        <button class="lang-btn" onclick="setLang('hi',this)">हि</button>
+        <button class="lang-btn" onclick="setLang('mr',this)">म</button>
+        <button class="lang-btn" onclick="setLang('kn',this)">ಕ</button>
+      </div>
+      <button id="theme-btn" onclick="toggleTheme()" style="
+        width:34px;height:34px;border-radius:8px;border:1px solid var(--border);
+        background:var(--surface);cursor:pointer;font-size:1rem;
+        display:flex;align-items:center;justify-content:center;transition:all .18s ease;
+      " title="Toggle Dark Mode">🌙</button>
+      <a class="back-btn" href="http://127.0.0.1:5000">← <span data-i18n="back">Back to SmartRx</span></a>
+    </div>
+  </div>
+</nav>
+
+<!-- ── MAIN ── -->
+<div class="container">
+
+  <!-- Header -->
+  <div class="page-header">
+    <p class="page-eyebrow" data-i18n="eyebrow">AI-Powered Analytics</p>
+    <h1 class="page-title"><em data-i18n="title_em">Smart</em> <span data-i18n="title_rest">Expiry Prediction Dashboard</span></h1>
+    <p class="page-sub" data-i18n="subtitle">
+      Predicts expiry risk for every inventory item using sales rate analysis.
+      Identifies possible waste and suggests actions to reduce losses.
+    </p>
+  </div>
+
+  <!-- Summary Cards -->
+  <div class="summary-grid" id="summary-grid">
+    <div class="sum-card critical">
+      <div class="sum-num red" id="s-critical">—</div>
+      <div class="sum-lbl" data-i18n="s_critical">Critical / Expired</div>
+    </div>
+    <div class="sum-card high">
+      <div class="sum-num orange" id="s-high">—</div>
+      <div class="sum-lbl" data-i18n="s_high">High Risk (≤7 days)</div>
+    </div>
+    <div class="sum-card medium">
+      <div class="sum-num amber" id="s-medium">—</div>
+      <div class="sum-lbl" data-i18n="s_medium">Medium Risk (≤30 days)</div>
+    </div>
+    <div class="sum-card safe">
+      <div class="sum-num green" id="s-safe">—</div>
+      <div class="sum-lbl" data-i18n="s_safe">Safe Stock</div>
+    </div>
+    <div class="sum-card loss">
+      <div class="sum-num teal" id="s-waste">—</div>
+      <div class="sum-lbl" data-i18n="s_waste">Units at Risk of Waste</div>
+    </div>
+    <div class="sum-card loss">
+      <div class="sum-num teal" id="s-loss">—</div>
+      <div class="sum-lbl" data-i18n="s_loss">Est. Financial Loss (₹)</div>
+    </div>
+  </div>
+
+  <!-- Toolbar -->
+  <div class="toolbar">
+    <div style="display:flex;gap:.6rem;flex-wrap:wrap;align-items:center;">
+      <div class="filter-group">
+        <button class="filter-btn active" onclick="filterRisk('ALL',this)" data-i18n="f_all">All</button>
+        <button class="filter-btn" onclick="filterRisk('CRITICAL',this)" data-i18n="f_critical">Critical</button>
+        <button class="filter-btn" onclick="filterRisk('HIGH',this)" data-i18n="f_high">High</button>
+        <button class="filter-btn" onclick="filterRisk('MEDIUM',this)" data-i18n="f_medium">Medium</button>
+        <button class="filter-btn" onclick="filterRisk('LOW',this)" data-i18n="f_low">Low</button>
+        <button class="filter-btn" onclick="filterRisk('SAFE',this)" data-i18n="f_safe">Safe</button>
+      </div>
+      <input class="search-inp" id="search-inp" placeholder="Search medicine…" oninput="applyFilters()"/>
+    </div>
+    <button class="refresh-btn" onclick="loadData()">
+      ↻ <span data-i18n="refresh">Refresh</span>
+    </button>
+  </div>
+
+  <!-- Table -->
+  <div class="table-wrap">
+    <div id="table-container">
+      <div class="loading">
+        <div class="spinner"></div>
+        <div class="loading-text" data-i18n="loading">Running Expiry Prediction Model…</div>
+        <div class="loading-sub" data-i18n="loading_sub">Analysing sales rates and stock levels</div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- ── DETAIL MODAL ── -->
+<div class="modal-overlay" id="modal-overlay" onclick="closeModal(event)">
+  <div class="modal" id="modal">
+    <div class="modal-header">
+      <div>
+        <div class="modal-title" id="modal-title">Medicine Details</div>
+        <div id="modal-subtitle" style="font-size:.78rem;color:var(--text3);margin-top:.25rem;"></div>
+      </div>
+      <button class="modal-close" onclick="closeModalDirect()">✕</button>
+    </div>
+    <div class="modal-body">
+
+      <!-- Stats grid -->
+      <div class="modal-section">
+        <div class="modal-section-title">📊 Prediction Summary</div>
+        <div class="modal-grid" id="modal-stats"></div>
+      </div>
+
+      <!-- Recommendations -->
+      <div class="modal-section">
+        <div class="modal-section-title">💡 Recommendations</div>
+        <div class="rec-list" id="modal-recs"></div>
+      </div>
+
+    </div>
+    <div class="modal-footer">
+      <button class="modal-btn secondary" onclick="closeModalDirect()">Close</button>
+      <button class="modal-btn primary" onclick="closeModalDirect()">✓ Noted</button>
+    </div>
+  </div>
+</div>
+
+<div id="toasts"></div>
+
+<script>
+// ============================================================
+// MULTILINGUAL SUPPORT
+// ============================================================
+const TRANSLATIONS = {
+  en: {
+    back:'Back to SmartRx', eyebrow:'AI-Powered Analytics',
+    title_em:'Smart', title_rest:'Expiry Prediction Dashboard',
+    subtitle:'Predicts expiry risk for every inventory item using sales rate analysis. Identifies possible waste and suggests actions to reduce losses.',
+    s_critical:'Critical / Expired', s_high:'High Risk (≤7 days)',
+    s_medium:'Medium Risk (≤30 days)', s_safe:'Safe Stock',
+    s_waste:'Units at Risk of Waste', s_loss:'Est. Financial Loss (₹)',
+    f_all:'All', f_critical:'Critical', f_high:'High',
+    f_medium:'Medium', f_low:'Low', f_safe:'Safe',
+    refresh:'Refresh', loading:'Running Expiry Prediction Model…',
+    loading_sub:'Analysing sales rates and stock levels',
+    // Table headers
+    th_medicine:'Medicine', th_pharmacy:'Pharmacy', th_stock:'Stock',
+    th_expected:'Expected Sales', th_waste:'Possible Waste',
+    th_risk:'Risk', th_action:'Suggested Action', th_loss:'Loss Estimate',
+    // Actions
+    DISCARD:'Discard Immediately', URGENT_DISCOUNT:'Urgent Discount',
+    DISCOUNT:'Apply Discount', MONITOR:'Monitor', NO_ACTION:'No Action Needed',
+    // Days
+    days_left:'days left', expired:'Expired',
+  },
+  hi: {
+    back:'SmartRx पर वापस', eyebrow:'AI-संचालित विश्लेषण',
+    title_em:'स्मार्ट', title_rest:'एक्सपायरी प्रेडिक्शन डैशबोर्ड',
+    subtitle:'बिक्री दर विश्लेषण का उपयोग करके प्रत्येक इन्वेंटरी आइटम के लिए एक्सपायरी जोखिम की भविष्यवाणी करता है।',
+    s_critical:'क्रिटिकल / एक्सपायर्ड', s_high:'उच्च जोखिम (≤7 दिन)',
+    s_medium:'मध्यम जोखिम (≤30 दिन)', s_safe:'सुरक्षित स्टॉक',
+    s_waste:'बर्बाद होने का जोखिम', s_loss:'अनुमानित वित्तीय हानि (₹)',
+    f_all:'सभी', f_critical:'क्रिटिकल', f_high:'उच्च',
+    f_medium:'मध्यम', f_low:'कम', f_safe:'सुरक्षित',
+    refresh:'रीफ्रेश', loading:'एक्सपायरी प्रेडिक्शन मॉडल चल रहा है…',
+    loading_sub:'बिक्री दरों और स्टॉक स्तरों का विश्लेषण',
+    th_medicine:'दवा', th_pharmacy:'फार्मेसी', th_stock:'स्टॉक',
+    th_expected:'अपेक्षित बिक्री', th_waste:'संभावित बर्बादी',
+    th_risk:'जोखिम', th_action:'सुझाई गई कार्रवाई', th_loss:'हानि अनुमान',
+    DISCARD:'तुरंत नष्ट करें', URGENT_DISCOUNT:'तत्काल छूट',
+    DISCOUNT:'छूट लगाएं', MONITOR:'निगरानी करें', NO_ACTION:'कोई कार्रवाई नहीं',
+    days_left:'दिन बचे', expired:'एक्सपायर्ड',
+  },
+  mr: {
+    back:'SmartRx वर परत', eyebrow:'AI-चालित विश्लेषण',
+    title_em:'स्मार्ट', title_rest:'एक्सपायरी अंदाज डॅशबोर्ड',
+    subtitle:'विक्री दर विश्लेषण वापरून प्रत्येक इन्व्हेंटरी आयटमसाठी एक्सपायरी धोका अंदाज करतो.',
+    s_critical:'गंभीर / कालबाह्य', s_high:'उच्च धोका (≤7 दिवस)',
+    s_medium:'मध्यम धोका (≤30 दिवस)', s_safe:'सुरक्षित साठा',
+    s_waste:'वाया जाण्याचा धोका', s_loss:'अंदाजे आर्थिक नुकसान (₹)',
+    f_all:'सर्व', f_critical:'गंभीर', f_high:'उच्च',
+    f_medium:'मध्यम', f_low:'कमी', f_safe:'सुरक्षित',
+    refresh:'रीफ्रेश', loading:'एक्सपायरी अंदाज मॉडेल चालू आहे…',
+    loading_sub:'विक्री दर आणि साठा पातळी विश्लेषण',
+    th_medicine:'औषध', th_pharmacy:'फार्मसी', th_stock:'साठा',
+    th_expected:'अपेक्षित विक्री', th_waste:'संभाव्य नुकसान',
+    th_risk:'धोका', th_action:'सुचवलेली कारवाई', th_loss:'नुकसान अंदाज',
+    DISCARD:'लगेच नष्ट करा', URGENT_DISCOUNT:'तातडीची सूट',
+    DISCOUNT:'सूट द्या', MONITOR:'देखरेख करा', NO_ACTION:'कारवाई नाही',
+    days_left:'दिवस बाकी', expired:'कालबाह्य',
+  },
+  kn: {
+    back:'SmartRx ಗೆ ಹಿಂತಿರುಗಿ', eyebrow:'AI-ಚಾಲಿತ ವಿಶ್ಲೇಷಣೆ',
+    title_em:'ಸ್ಮಾರ್ಟ್', title_rest:'ಮುಕ್ತಾಯ ಮುನ್ಸೂಚನೆ ಡ್ಯಾಶ್‌ಬೋರ್ಡ್',
+    subtitle:'ಮಾರಾಟ ದರ ವಿಶ್ಲೇಷಣೆಯನ್ನು ಬಳಸಿ ಪ್ರತಿ ದಾಸ್ತಾನು ಐಟಂಗೆ ಮಿತಿ ಅಪಾಯವನ್ನು ಊಹಿಸುತ್ತದೆ.',
+    s_critical:'ಗಂಭೀರ / ಅವಧಿ ಮೀರಿದ', s_high:'ಹೆಚ್ಚಿನ ಅಪಾಯ (≤7 ದಿನ)',
+    s_medium:'ಮಧ್ಯಮ ಅಪಾಯ (≤30 ದಿನ)', s_safe:'ಸುರಕ್ಷಿತ ಸ್ಟಾಕ್',
+    s_waste:'ವ್ಯರ್ಥವಾಗುವ ಅಪಾಯ', s_loss:'ಅಂದಾಜು ಆರ್ಥಿಕ ನಷ್ಟ (₹)',
+    f_all:'ಎಲ್ಲಾ', f_critical:'ಗಂಭೀರ', f_high:'ಹೆಚ್ಚಿನ',
+    f_medium:'ಮಧ್ಯಮ', f_low:'ಕಡಿಮೆ', f_safe:'ಸುರಕ್ಷಿತ',
+    refresh:'ರಿಫ್ರೆಶ್', loading:'ಮಿತಿ ಮುನ್ಸೂಚನೆ ಮಾದರಿ ಚಾಲನೆಯಲ್ಲಿದೆ…',
+    loading_sub:'ಮಾರಾಟ ದರಗಳು ಮತ್ತು ಸ್ಟಾಕ್ ಮಟ್ಟಗಳ ವಿಶ್ಲೇಷಣೆ',
+    th_medicine:'ಔಷಧ', th_pharmacy:'ಫಾರ್ಮಸಿ', th_stock:'ಸ್ಟಾಕ್',
+    th_expected:'ನಿರೀಕ್ಷಿತ ಮಾರಾಟ', th_waste:'ಸಂಭಾವ್ಯ ವ್ಯರ್ಥ',
+    th_risk:'ಅಪಾಯ', th_action:'ಸೂಚಿಸಿದ ಕ್ರಮ', th_loss:'ನಷ್ಟ ಅಂದಾಜು',
+    DISCARD:'ತಕ್ಷಣ ಹೊರಹಾಕಿ', URGENT_DISCOUNT:'ತುರ್ತು ರಿಯಾಯಿತಿ',
+    DISCOUNT:'ರಿಯಾಯಿತಿ ನೀಡಿ', MONITOR:'ಮೇಲ್ವಿಚಾರಣೆ', NO_ACTION:'ಕ್ರಮ ಅಗತ್ಯವಿಲ್ಲ',
+    days_left:'ದಿನ ಉಳಿದಿವೆ', expired:'ಅವಧಿ ಮೀರಿದೆ',
+  },
+};
+
+let currentLang = 'en';
+let allPredictions = [];
+let currentFilter = 'ALL';
+
+function t(key){ return TRANSLATIONS[currentLang][key] || TRANSLATIONS.en[key] || key; }
+
+function setLang(lang, btn){
+  currentLang = lang;
+  document.querySelectorAll('.lang-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  // Update all static i18n elements
+  document.querySelectorAll('[data-i18n]').forEach(el=>{
+    const key = el.getAttribute('data-i18n');
+    el.textContent = t(key);
+  });
+  // Re-render table with new language
+  if(allPredictions.length) renderTable(getFiltered());
+}
+
+// ============================================================
+// DATA FETCHING
+// ============================================================
+const API = 'http://127.0.0.1:5000/api/v1/predict_expiry';
+
+async function loadData(){
+  // Show loading
+  document.getElementById('table-container').innerHTML = `
+    <div class="loading">
+      <div class="spinner"></div>
+      <div class="loading-text">${t('loading')}</div>
+      <div class="loading-sub">${t('loading_sub')}</div>
+    </div>`;
+
+  // Reset summary
+  ['s-critical','s-high','s-medium','s-safe','s-waste','s-loss'].forEach(id=>{
+    document.getElementById(id).textContent='—';
+  });
+
+  try{
+    const res  = await fetch(API);
+    const json = await res.json();
+
+    if(!json.success) throw new Error(json.error || 'API error');
+
+    allPredictions = json.data.predictions;
+    const sum      = json.data.summary;
+
+    // Fill summary cards
+    document.getElementById('s-critical').textContent = sum.critical + sum.high;
+    document.getElementById('s-high').textContent     = sum.high;
+    document.getElementById('s-medium').textContent   = sum.medium;
+    document.getElementById('s-safe').textContent     = sum.safe + sum.low;
+    document.getElementById('s-waste').textContent    = sum.total_waste.toLocaleString('en-IN');
+    document.getElementById('s-loss').textContent     = '₹' + sum.total_loss.toLocaleString('en-IN');
+
+    renderTable(getFiltered());
+    toast('✅ ' + allPredictions.length + ' predictions loaded', 'ok');
+
+  }catch(e){
+    document.getElementById('table-container').innerHTML = `
+      <div class="loading">
+        <div style="font-size:2rem;margin-bottom:.5rem">⚠</div>
+        <div class="loading-text" style="color:#c0392b">Could not load predictions</div>
+        <div class="loading-sub">Make sure Flask server is running on port 5000<br>and predict_expiry.py is registered in app.py</div>
+      </div>`;
+    toast('❌ ' + e.message, 'err');
+  }
+}
+
+// ============================================================
+// FILTERING
+// ============================================================
+function filterRisk(level, btn){
+  currentFilter = level;
+  document.querySelectorAll('.filter-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  renderTable(getFiltered());
+}
+
+function getFiltered(){
+  const q = document.getElementById('search-inp').value.trim().toLowerCase();
+  return allPredictions.filter(p=>{
+    const riskMatch = currentFilter==='ALL' || p.risk_level===currentFilter;
+    const textMatch = !q ||
+      p.medicine_name.toLowerCase().includes(q) ||
+      p.pharmacy_name.toLowerCase().includes(q) ||
+      (p.batch_number||'').toLowerCase().includes(q);
+    return riskMatch && textMatch;
+  });
+}
+
+function applyFilters(){ renderTable(getFiltered()); }
+
+// ============================================================
+// TABLE RENDERING
+// ============================================================
+function renderTable(data){
+  if(!data.length){
+    document.getElementById('table-container').innerHTML =
+      `<div class="loading"><div style="font-size:2rem">🔍</div><div class="loading-text">No results found</div></div>`;
+    return;
+  }
+
+  const actionIcons = {
+    DISCARD:'🚫', URGENT_DISCOUNT:'🔥', DISCOUNT:'🏷️', MONITOR:'👁', NO_ACTION:'✅'
+  };
+
+  const rows = data.map((p,i)=>{
+    const barColor =
+      p.risk_level==='CRITICAL' ? '#c0392b' :
+      p.risk_level==='HIGH'     ? '#d46113' :
+      p.risk_level==='MEDIUM'   ? '#d4830a' :
+      p.risk_level==='LOW'      ? '#40916c' : '#52b788';
+
+    const wasteClass =
+      p.possible_waste > 20 ? 'high' :
+      p.possible_waste > 5  ? 'med'  : 'ok';
+
+    const daysLabel = p.days_left <= 0
+      ? `<span style="color:var(--red);font-weight:600">${t('expired')}</span>`
+      : `<span style="color:var(--text3);font-size:.75rem">${p.days_left} ${t('days_left')}</span>`;
+
+    return `<tr style="animation:fadeInRow .3s ease ${i*20}ms both">
+      <td>
+        <div class="med-cell">${p.medicine_name}</div>
+        <div class="med-sub">Batch: ${p.batch_number} &nbsp;·&nbsp; ${p.category||'General'}</div>
+        ${daysLabel}
+      </td>
+      <td>
+        <div style="font-weight:500;font-size:.85rem">${p.pharmacy_name}</div>
+        <div style="font-size:.72rem;color:var(--text3)">ID: ${p.pharmacy_id}</div>
+      </td>
+      <td>
+        <div style="font-weight:600;font-size:.95rem">${p.quantity}</div>
+        <div style="font-size:.7rem;color:var(--text3)">${p.daily_sales_rate}/day avg</div>
+      </td>
+      <td style="font-weight:500;color:var(--green)">${p.expected_sales}</td>
+      <td>
+        <div class="waste-num ${wasteClass}">${p.possible_waste} units</div>
+        <div class="loss-num">₹${p.loss_estimate.toLocaleString('en-IN')}</div>
+      </td>
+      <td>
+        <span class="risk-badge ${p.risk_level}">${p.risk_level}</span>
+        <div class="risk-bar-wrap" style="margin-top:.4rem">
+          <div class="risk-bar-track">
+            <div class="risk-bar-fill" style="width:${p.risk_score}%;background:${barColor}"></div>
+          </div>
+          <div class="risk-score-num">${p.risk_score}/100</div>
+        </div>
+      </td>
+      <td>
+        <span class="action-badge ${p.action}" onclick='openModal(${JSON.stringify(p)})'>
+          ${actionIcons[p.action]||''} ${t(p.action)}
+        </span>
+      </td>
+    </tr>`;
+  }).join('');
+
+  document.getElementById('table-container').innerHTML = `
+    <div style="padding:.6rem 1rem;font-size:.78rem;color:var(--text3);border-bottom:1px solid var(--border2)">
+      Showing <strong>${data.length}</strong> of <strong>${allPredictions.length}</strong> items
+    </div>
+    <div style="overflow-x:auto">
+    <table class="pred-table">
+      <thead>
+        <tr>
+          <th>${t('th_medicine')}</th>
+          <th>${t('th_pharmacy')}</th>
+          <th>${t('th_stock')}</th>
+          <th>${t('th_expected')}</th>
+          <th>${t('th_waste')}</th>
+          <th>${t('th_risk')}</th>
+          <th>${t('th_action')}</th>
+        </tr>
+      </thead>
+      <tbody>${rows}</tbody>
+    </table>
+    </div>`;
+}
+
+// ============================================================
+// TOAST
+// ============================================================
+function toast(msg, type='ok'){
+  const c = document.getElementById('toasts');
+  const t = document.createElement('div');
+  t.className = `toast ${type}`;
+  t.textContent = msg;
+  c.appendChild(t);
+  setTimeout(()=>{t.style.opacity='0';t.style.transition='opacity .3s';setTimeout(()=>t.remove(),300);},3500);
+}
+
+// ── Row fade-in animation ────────────────────────────────────
+const style = document.createElement('style');
+style.textContent = `@keyframes fadeInRow{from{opacity:0;transform:translateX(-8px)}to{opacity:1;transform:translateX(0)}}`;
+document.head.appendChild(style);
+
+// ============================================================
+// MODAL — Action Detail Popup
+// ============================================================
+const RECOMMENDATIONS = {
+  DISCARD: [
+    { icon:'🚫', text:'Remove from shelf immediately — medicine is expired and unsafe for sale.' },
+    { icon:'📋', text:'Record disposal in compliance log with batch number and quantity.' },
+    { icon:'🏭', text:'Contact supplier if expiry seems premature — may be eligible for credit.' },
+    { icon:'⚠️', text:'Inform pharmacy staff to check adjacent stock for same batch.' },
+  ],
+  URGENT_DISCOUNT: [
+    { icon:'🔥', text:'Apply 30–50% discount immediately — only days left to sell.' },
+    { icon:'📢', text:'Place near checkout counter or front display for maximum visibility.' },
+    { icon:'📱', text:'Notify regular customers via WhatsApp or SMS about the discount.' },
+    { icon:'🏷️', text:'Add a bright "Last Few Days" label to attract attention.' },
+  ],
+  DISCOUNT: [
+    { icon:'🏷️', text:'Apply 15–25% discount to accelerate sales before expiry.' },
+    { icon:'📦', text:'Move stock to front of display or dedicated discount section.' },
+    { icon:'🔄', text:'Consider bundling with high-demand medicines to clear faster.' },
+    { icon:'📊', text:'Review reorder quantity for this medicine to avoid future overstock.' },
+  ],
+  MONITOR: [
+    { icon:'👁', text:'Check this item again in 2 weeks — currently low risk but trending.' },
+    { icon:'📉', text:'If sales slow down, consider a small early discount to prevent waste.' },
+    { icon:'📋', text:'Ensure stock is FIFO arranged — oldest batches at the front.' },
+    { icon:'🔄', text:'Verify reorder levels are set correctly for this medicine.' },
+  ],
+  NO_ACTION: [
+    { icon:'✅', text:'Stock is healthy — expected sales will clear inventory before expiry.' },
+    { icon:'📦', text:'Ensure proper storage conditions (temperature, humidity) are maintained.' },
+    { icon:'🔄', text:'Continue normal FIFO dispensing practice.' },
+    { icon:'📊', text:'This medicine is performing well — maintain current stock levels.' },
+  ],
+};
+
+function openModal(p){
+  document.getElementById('modal-title').textContent = p.medicine_name;
+  document.getElementById('modal-subtitle').innerHTML =
+    `${p.pharmacy_name} &nbsp;·&nbsp; Batch: ${p.batch_number} &nbsp;·&nbsp;
+     <span class="risk-badge ${p.risk_level}" style="font-size:.65rem">${p.risk_level}</span>`;
+
+  // Stats
+  const daysLabel = p.days_left <= 0
+    ? `<span style="color:var(--red)">Expired ${Math.abs(p.days_left)}d ago</span>`
+    : `<span style="color:${p.days_left<=7?'var(--red)':p.days_left<=30?'var(--amber)':'var(--green)'}">${p.days_left} days</span>`;
+
+  document.getElementById('modal-stats').innerHTML = `
+    <div class="modal-stat">
+      <div class="modal-stat-val">${p.quantity}</div>
+      <div class="modal-stat-lbl">Current Stock</div>
+    </div>
+    <div class="modal-stat">
+      <div class="modal-stat-val">${daysLabel}</div>
+      <div class="modal-stat-lbl">Time Until Expiry</div>
+    </div>
+    <div class="modal-stat">
+      <div class="modal-stat-val" style="color:var(--green)">${p.expected_sales}</div>
+      <div class="modal-stat-lbl">Expected Sales</div>
+    </div>
+    <div class="modal-stat">
+      <div class="modal-stat-val" style="color:${p.possible_waste>0?'var(--red)':'var(--green-lt)'}">
+        ${p.possible_waste} units
+      </div>
+      <div class="modal-stat-lbl">Possible Waste</div>
+    </div>
+    <div class="modal-stat">
+      <div class="modal-stat-val">${p.daily_sales_rate}/day</div>
+      <div class="modal-stat-lbl">Avg Sales Rate</div>
+    </div>
+    <div class="modal-stat">
+      <div class="modal-stat-val" style="color:var(--red)">
+        ${p.loss_estimate > 0 ? '₹'+p.loss_estimate.toLocaleString('en-IN') : '₹0'}
+      </div>
+      <div class="modal-stat-lbl">Est. Loss if Wasted</div>
+    </div>`;
+
+  // Recommendations
+  const recs = RECOMMENDATIONS[p.action] || RECOMMENDATIONS.MONITOR;
+  document.getElementById('modal-recs').innerHTML = recs.map(r=>
+    `<div class="rec-item">
+      <span class="rec-icon">${r.icon}</span>
+      <span>${r.text}</span>
+    </div>`
+  ).join('');
+
+  document.getElementById('modal-overlay').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+
+function closeModal(e){
+  if(e.target === document.getElementById('modal-overlay')) closeModalDirect();
+}
+function closeModalDirect(){
+  document.getElementById('modal-overlay').classList.remove('open');
+  document.body.style.overflow = '';
+}
+// Close on Escape key
+document.addEventListener('keydown', e=>{ if(e.key==='Escape') closeModalDirect(); });
+
+// ============================================================
+// DARK MODE — syncs with main SmartRx app via localStorage
+// ============================================================
+function toggleTheme(){
+  const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+  const newTheme = isDark ? 'light' : 'dark';
+  document.documentElement.setAttribute('data-theme', newTheme);
+  localStorage.setItem('smartrx-theme', newTheme);
+  document.getElementById('theme-btn').textContent = newTheme==='dark' ? '☀️' : '🌙';
+}
+function initTheme(){
+  const saved = localStorage.getItem('smartrx-theme') || 'light';
+  document.documentElement.setAttribute('data-theme', saved);
+  const btn = document.getElementById('theme-btn');
+  if(btn) btn.textContent = saved==='dark' ? '☀️' : '🌙';
+}
+function initLangDash(){
+  const saved = localStorage.getItem('smartrx-lang') || 'en';
+  currentLang = saved;
+  document.querySelectorAll('.lang-btn').forEach(b=>{
+    b.classList.toggle('active', b.getAttribute('onclick')?.includes(`'${saved}'`));
+  });
+  document.querySelectorAll('[data-i18n]').forEach(el=>{
+    el.textContent = t(el.getAttribute('data-i18n'));
+  });
+}
+
+// ── Boot ─────────────────────────────────────────────────────
+window.addEventListener('DOMContentLoaded', ()=>{
+  initTheme();
+  initLangDash();
+  loadData();
+});
+</script>
+</body>
+</html>

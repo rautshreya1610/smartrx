@@ -1,0 +1,2757 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>SmartRx — Smart Pharmacy Finder</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Geist:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
+<style>
+:root{
+  --bg:       #f4f1eb;
+  --surface:  #ede9e1;
+  --card:     #ffffff;
+  --border:   #d4cfc5;
+  --border2:  #e8e3d9;
+  --forest:   #1a3a2a;
+  --green:    #2d6a4f;
+  --green-lt: #52b788;
+  --teal:     #40916c;
+  --amber:    #d4830a;
+  --red:      #c0392b;
+  --orange:   #d46113;
+  --blue:     #2563eb;
+  --text:     #1c1c1c;
+  --text2:    #4a4a4a;
+  --text3:    #7a7a7a;
+  --shadow:   0 1px 3px rgba(0,0,0,.08), 0 4px 16px rgba(0,0,0,.06);
+  --shadow2:  0 2px 8px rgba(0,0,0,.12), 0 8px 32px rgba(0,0,0,.08);
+  --radius:   12px;
+  --radius2:  8px;
+  --head:     'Instrument Serif', Georgia, serif;
+  --body:     'Geist', 'Helvetica Neue', sans-serif;
+  --trans:    .18s ease;
+}
+
+/* ── DARK MODE ── */
+[data-theme="dark"]{
+  --bg:      #0f1a14;
+  --surface: #162010;
+  --card:    #1c2b1e;
+  --border:  #2a3d2c;
+  --border2: #233227;
+  --forest:  #74c99a;
+  --green:   #52b788;
+  --green-lt:#74c99a;
+  --teal:    #63c192;
+  --text:    #e8f0ea;
+  --text2:   #b0c8b8;
+  --text3:   #6e9478;
+  --shadow:  0 1px 3px rgba(0,0,0,.3), 0 4px 16px rgba(0,0,0,.2);
+  --shadow2: 0 2px 8px rgba(0,0,0,.4), 0 8px 32px rgba(0,0,0,.3);
+}
+[data-theme="dark"] body::before{
+  background-image:radial-gradient(circle, rgba(82,183,136,.08) 1px, transparent 1px);
+}
+[data-theme="dark"] nav{
+  background:rgba(15,26,20,.92);
+}
+
+/* ── THEME & LANG CONTROLS ── */
+.nav-controls{display:flex;align-items:center;gap:.5rem;flex-shrink:0;}
+.lang-sel{
+  display:flex;gap:2px;background:var(--surface);
+  border:1px solid var(--border);border-radius:10px;padding:3px;
+}
+.lang-btn{
+  padding:.28rem .6rem;border-radius:6px;border:none;cursor:pointer;
+  font-family:var(--body);font-size:.72rem;font-weight:500;
+  color:var(--text3);background:transparent;transition:all var(--trans);
+}
+.lang-btn.active{background:var(--card);color:var(--forest);box-shadow:var(--shadow);font-weight:700;}
+.theme-btn{
+  width:34px;height:34px;border-radius:8px;border:1px solid var(--border);
+  background:var(--surface);cursor:pointer;font-size:1rem;
+  display:flex;align-items:center;justify-content:center;
+  transition:all var(--trans);flex-shrink:0;
+}
+.theme-btn:hover{border-color:var(--teal);background:var(--card);}
+
+/* ── LOGIN OVERLAY ── */
+#login-overlay{
+  position:fixed;inset:0;z-index:9999;
+  background:var(--bg);
+  display:flex;align-items:center;justify-content:center;
+  animation:fadeIn .3s ease;
+}
+#login-overlay.hidden{display:none;}
+.login-card{
+  width:100%;max-width:420px;
+  background:var(--card);border:1px solid var(--border);
+  border-radius:20px;padding:2.5rem 2rem;
+  box-shadow:var(--shadow2);
+  animation:slideUp .4s ease;
+}
+.login-logo{font-family:var(--head);font-size:1.8rem;color:var(--forest);
+  display:flex;align-items:center;gap:.5rem;margin-bottom:.3rem;}
+.login-tagline{font-size:.82rem;color:var(--text3);margin-bottom:2rem;}
+.login-tabs{display:flex;gap:4px;background:var(--surface);
+  border:1px solid var(--border);border-radius:10px;padding:3px;margin-bottom:1.5rem;}
+.login-tab{flex:1;padding:.4rem;border-radius:7px;border:none;cursor:pointer;
+  font-family:var(--body);font-size:.82rem;font-weight:500;
+  color:var(--text3);background:transparent;transition:all var(--trans);}
+.login-tab.active{background:var(--card);color:var(--forest);
+  box-shadow:var(--shadow);font-weight:700;}
+.login-field{margin-bottom:1rem;}
+.login-field label{display:block;font-size:.78rem;font-weight:600;
+  color:var(--text2);margin-bottom:.4rem;}
+.login-field input{width:100%;padding:.65rem .9rem;
+  border:1.5px solid var(--border);border-radius:10px;
+  background:var(--surface);color:var(--text);
+  font-family:var(--body);font-size:.88rem;transition:border-color var(--trans);}
+.login-field input:focus{outline:none;border-color:var(--teal);}
+.login-btn{width:100%;padding:.75rem;background:var(--forest);color:#fff;
+  border:none;border-radius:10px;font-family:var(--body);font-size:.92rem;
+  font-weight:700;cursor:pointer;transition:background var(--trans);margin-top:.5rem;}
+.login-btn:hover{background:var(--green);}
+.login-err{color:var(--red);font-size:.8rem;margin-top:.6rem;
+  text-align:center;display:none;}
+.login-hint{font-size:.75rem;color:var(--text3);text-align:center;
+  margin-top:1rem;line-height:1.7;background:var(--surface);
+  border-radius:8px;padding:.6rem;}
+.login-hint strong{color:var(--forest);}
+
+/* ── ROLE BADGE IN NAV ── */
+.role-badge{
+  display:flex;align-items:center;gap:.35rem;
+  padding:.28rem .7rem;border-radius:20px;font-size:.72rem;font-weight:700;
+  border:1px solid var(--border);background:var(--surface);cursor:pointer;
+  transition:all var(--trans);white-space:nowrap;
+}
+.role-badge.admin{background:rgba(26,58,42,.1);border-color:var(--teal);color:var(--forest);}
+.role-badge.user{background:rgba(29,78,216,.08);border-color:#93c5fd;color:#1d4ed8;}
+[data-theme="dark"] .role-badge.user{color:#93c5fd;}
+[data-theme="dark"] .role-badge.admin{color:var(--green-lt);}
+
+/* ── ADMIN-ONLY elements hidden for users ── */
+.admin-only{display:none;}
+body.is-admin .admin-only{display:flex;}
+body.is-admin .admin-only-block{display:block;}
+.admin-only-block{display:none;}
+
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--text);font-family:var(--body);min-height:100vh;overflow-x:hidden;}
+body::before{content:'';position:fixed;inset:0;background-image:radial-gradient(circle, rgba(45,106,79,.12) 1px, transparent 1px);background-size:28px 28px;pointer-events:none;z-index:0;}
+
+/* NAV */
+nav{position:sticky;top:0;z-index:200;background:rgba(244,241,235,.92);backdrop-filter:blur(20px);border-bottom:1px solid var(--border);}
+.nav-inner{max-width:1280px;margin:0 auto;padding:0 1.5rem;height:60px;display:flex;align-items:center;justify-content:space-between;gap:1rem;}
+.logo{font-family:var(--head);font-size:1.4rem;color:var(--forest);display:flex;align-items:center;gap:.5rem;white-space:nowrap;}
+.logo-dot{width:10px;height:10px;border-radius:50%;background:var(--green-lt);display:inline-block;}
+.nav-tabs{display:flex;gap:2px;background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:3px;flex-shrink:0;}
+.nav-tab{padding:.38rem .9rem;border-radius:7px;border:none;cursor:pointer;font-family:var(--body);font-size:.82rem;font-weight:500;color:var(--text3);background:transparent;transition:all var(--trans);white-space:nowrap;}
+.nav-tab:hover,.nav-tab.active{background:var(--card);color:var(--green);box-shadow:var(--shadow);}
+.nav-tab.active{color:var(--forest);font-weight:600;}
+.badge{display:inline-flex;align-items:center;justify-content:center;background:var(--red);color:#fff;font-size:.65rem;font-weight:700;width:16px;height:16px;border-radius:50%;margin-left:4px;vertical-align:middle;}
+
+/* LAYOUT */
+.container{max-width:1280px;margin:0 auto;padding:2rem 1.5rem;position:relative;z-index:1;}
+.view{display:none;animation:fadeIn .25s ease;}
+.view.active{display:block;}
+@keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+
+/* HERO */
+.hero{padding:3.5rem 0 2.5rem;display:grid;grid-template-columns:1fr 1fr;gap:3rem;align-items:center;}
+@media(max-width:768px){.hero{grid-template-columns:1fr;padding:2rem 0;gap:2rem;}}
+.hero-text .eyebrow{font-size:.72rem;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:var(--teal);margin-bottom:.75rem;display:flex;align-items:center;gap:.5rem;}
+.eyebrow::before{content:'';display:block;width:20px;height:2px;background:var(--green-lt);}
+.hero-text h1{font-family:var(--head);font-size:clamp(2.2rem,4.5vw,3.6rem);line-height:1.08;letter-spacing:-.02em;color:var(--forest);margin-bottom:1rem;}
+.hero-text h1 em{color:var(--teal);font-style:italic;}
+.hero-text p{color:var(--text2);line-height:1.65;font-size:.97rem;max-width:380px;}
+.ds-chips{display:flex;flex-wrap:wrap;gap:.5rem;margin-top:1.25rem;}
+.ds-chip{display:inline-flex;align-items:center;gap:.4rem;background:var(--card);border:1px solid var(--border);border-radius:20px;padding:.3rem .8rem;font-size:.72rem;font-weight:500;color:var(--text2);}
+.ds-chip span{color:var(--green-lt);font-weight:700;font-size:.9rem;}
+.hero-search-card{background:var(--card);border:1px solid var(--border);border-radius:18px;padding:1.75rem;box-shadow:var(--shadow2);}
+.hero-search-card h3{font-family:var(--head);font-size:1.2rem;color:var(--forest);margin-bottom:1.2rem;}
+
+/* SEARCH INPUT */
+.search-wrap{position:relative;}
+.search-box{display:flex;align-items:center;background:var(--surface);border:1.5px solid var(--border);border-radius:12px;transition:border-color var(--trans),box-shadow var(--trans);overflow:hidden;}
+.search-box:focus-within{border-color:var(--teal);box-shadow:0 0 0 3px rgba(64,145,108,.12);}
+.search-box .icon{padding:0 .9rem;color:var(--text3);font-size:1rem;}
+#srch{flex:1;padding:.8rem .5rem;background:transparent;border:none;outline:none;font-family:var(--body);font-size:.95rem;color:var(--text);}
+#srch::placeholder{color:var(--text3);}
+.search-btn{margin:4px;padding:.6rem 1.2rem;background:var(--forest);color:#fff;border:none;border-radius:9px;cursor:pointer;font-family:var(--body);font-weight:600;font-size:.85rem;transition:background var(--trans),transform var(--trans);white-space:nowrap;}
+.search-btn:hover{background:var(--green);}
+.search-btn:active{transform:scale(.97);}
+.ac-list{position:absolute;top:calc(100% + 6px);left:0;right:0;background:var(--card);border:1px solid var(--border);border-radius:12px;overflow:hidden;box-shadow:var(--shadow2);z-index:300;display:none;}
+.ac-list.show{display:block;}
+.ac-item{padding:.65rem 1rem;cursor:pointer;font-size:.88rem;color:var(--text2);display:flex;align-items:center;gap:.7rem;border-bottom:1px solid var(--border2);transition:background var(--trans);}
+.ac-item:last-child{border-bottom:none;}
+.ac-item:hover{background:rgba(64,145,108,.06);color:var(--forest);}
+.ac-icon{font-size:.85rem;opacity:.6;}
+.ac-tag{margin-left:auto;font-size:.68rem;padding:2px 7px;border-radius:12px;background:rgba(64,145,108,.1);color:var(--teal);flex-shrink:0;}
+.loc-row{display:flex;align-items:center;gap:.6rem;margin-top:.75rem;flex-wrap:wrap;}
+.loc-group{display:flex;align-items:center;gap:.4rem;background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:.35rem .7rem;}
+.loc-group label{font-size:.72rem;color:var(--text3);flex-shrink:0;}
+.loc-group input{width:88px;background:transparent;border:none;outline:none;font-family:var(--body);font-size:.82rem;color:var(--text);}
+.radius-sel{background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:.38rem .7rem;font-family:var(--body);font-size:.82rem;color:var(--text);outline:none;cursor:pointer;}
+.loc-btn{background:transparent;border:1px solid var(--border);border-radius:8px;padding:.38rem .8rem;font-size:.78rem;color:var(--teal);cursor:pointer;display:flex;align-items:center;gap:.3rem;transition:all var(--trans);}
+.loc-btn:hover{border-color:var(--teal);background:rgba(64,145,108,.06);}
+
+/* STATS BAR */
+.stats-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:.75rem;margin:2rem 0;}
+.stat-card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:1.1rem 1.2rem;transition:box-shadow var(--trans),transform var(--trans);}
+.stat-card:hover{box-shadow:var(--shadow);transform:translateY(-1px);}
+.stat-num{font-family:var(--head);font-size:1.9rem;line-height:1;color:var(--forest);margin-bottom:.3rem;}
+.stat-num.amber{color:var(--amber);}
+.stat-num.red{color:var(--red);}
+.stat-lbl{font-size:.72rem;color:var(--text3);text-transform:uppercase;letter-spacing:.07em;}
+
+/* RESULTS */
+.results-section{margin-top:2rem;}
+.section-head{display:flex;align-items:center;gap:.75rem;margin-bottom:1.25rem;}
+.section-title{font-family:var(--head);font-size:1.4rem;color:var(--forest);}
+.count-chip{background:rgba(64,145,108,.1);color:var(--teal);border-radius:20px;padding:.2rem .75rem;font-size:.78rem;font-weight:600;}
+.med-card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);margin-bottom:1rem;overflow:hidden;box-shadow:var(--shadow);animation:slideUp .3s ease both;}
+@keyframes slideUp{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}
+.med-card-head{padding:1.1rem 1.5rem;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--border2);cursor:pointer;transition:background var(--trans);}
+.med-card-head:hover{background:rgba(64,145,108,.03);}
+.med-name{font-size:1.05rem;font-weight:600;color:var(--forest);}
+.med-meta{display:flex;gap:.4rem;margin-top:.35rem;flex-wrap:wrap;}
+.tag{font-size:.67rem;padding:2px 9px;border-radius:10px;background:rgba(45,106,79,.08);color:var(--green);border:1px solid rgba(45,106,79,.15);font-weight:500;}
+.tag.rx{background:rgba(196,63,43,.07);color:#c43f2b;border-color:rgba(196,63,43,.15);}
+.stock-pill{display:flex;align-items:center;gap:.35rem;font-size:.8rem;color:var(--text3);flex-shrink:0;}
+.dot{width:7px;height:7px;border-radius:50%;background:var(--green-lt);}
+.dot.none{background:var(--red);}
+.pharm-list{}
+.pharm-row{display:grid;grid-template-columns:1fr auto auto auto auto auto;gap:.8rem;align-items:center;padding:.85rem 1.5rem;border-bottom:1px solid var(--border2);transition:background var(--trans);font-size:.85rem;}
+.pharm-row:last-child{border-bottom:none;}
+.pharm-row:hover{background:rgba(0,0,0,.02);}
+.pharm-name{font-weight:500;font-size:.9rem;}
+.pharm-addr{font-size:.75rem;color:var(--text3);margin-top:.15rem;}
+.badge-base{font-size:.75rem;font-weight:600;padding:.22rem .65rem;border-radius:6px;white-space:nowrap;}
+.badge-qty{background:rgba(34,197,94,.1);color:#166534;border:1px solid rgba(34,197,94,.2);}
+.badge-qty.low{background:rgba(245,158,11,.1);color:#92400e;border:1px solid rgba(245,158,11,.2);}
+.badge-dist{background:rgba(64,145,108,.1);color:var(--teal);border:1px solid rgba(64,145,108,.2);}
+.badge-ok{background:rgba(34,197,94,.08);color:#166534;border:1px solid rgba(34,197,94,.15);}
+.badge-warn{background:rgba(245,158,11,.1);color:var(--amber);border:1px solid rgba(245,158,11,.2);}
+.badge-danger{background:rgba(192,57,43,.1);color:var(--red);border:1px solid rgba(192,57,43,.2);}
+.pharm-price{font-size:.8rem;color:var(--text3);text-align:right;min-width:70px;}
+.pharm-price .mrp{font-weight:600;color:var(--text);font-size:.88rem;}
+.pharm-price .cost{font-size:.7rem;color:var(--green);}
+
+/* ALERTS */
+.page-head{margin-bottom:2rem;}
+.page-eyebrow{font-size:.72rem;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--teal);margin-bottom:.4rem;}
+.page-title{font-family:var(--head);font-size:2rem;color:var(--forest);}
+.alerts-toolbar{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:.75rem;margin-bottom:1.5rem;}
+.filter-group{display:flex;gap:2px;background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:3px;}
+.filter-btn{padding:.35rem .85rem;border-radius:7px;border:none;cursor:pointer;font-family:var(--body);font-size:.78rem;font-weight:500;background:transparent;color:var(--text3);transition:all var(--trans);}
+.filter-btn.active{background:var(--card);color:var(--forest);box-shadow:var(--shadow);}
+.alert-summary-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(110px,1fr));gap:.75rem;margin-bottom:2rem;}
+.a-stat{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:1rem;text-align:center;}
+.a-num{font-family:var(--head);font-size:1.8rem;line-height:1;}
+.a-lbl{font-size:.7rem;color:var(--text3);text-transform:uppercase;letter-spacing:.07em;margin-top:.3rem;}
+.a-num.expired{color:var(--red);}
+.a-num.critical{color:var(--orange);}
+.a-num.warning{color:var(--amber);}
+.a-num.ok{color:var(--green-lt);}
+.alert-item{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:1rem 1.4rem;margin-bottom:.6rem;display:flex;align-items:center;gap:1rem;box-shadow:var(--shadow);animation:slideUp .22s ease both;}
+.alert-item.EXPIRED{border-left:3px solid var(--red);}
+.alert-item.CRITICAL{border-left:3px solid var(--orange);}
+.alert-item.WARNING{border-left:3px solid var(--amber);}
+.alert-lvl-badge{font-size:.65rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;padding:.28rem .7rem;border-radius:6px;flex-shrink:0;}
+.alert-lvl-badge.EXPIRED{background:rgba(192,57,43,.1);color:var(--red);}
+.alert-lvl-badge.CRITICAL{background:rgba(212,97,19,.1);color:var(--orange);}
+.alert-lvl-badge.WARNING{background:rgba(212,131,10,.1);color:var(--amber);}
+.alert-info{flex:1;min-width:0;}
+.alert-med{font-weight:600;font-size:.92rem;}
+.alert-sub{font-size:.78rem;color:var(--text3);margin-top:.2rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.alert-days-col{text-align:right;flex-shrink:0;}
+.alert-num{font-family:var(--head);font-size:1.6rem;line-height:1;}
+.alert-num.expired{color:var(--red);}
+.alert-num.critical{color:var(--orange);}
+.alert-num.warning{color:var(--amber);}
+.alert-unit{font-size:.68rem;color:var(--text3);}
+
+/* ADMIN */
+.admin-grid{display:grid;grid-template-columns:380px 1fr;gap:1.5rem;align-items:start;}
+@media(max-width:900px){.admin-grid{grid-template-columns:1fr;}}
+.panel{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:1.5rem;box-shadow:var(--shadow);}
+.panel-title{font-family:var(--head);font-size:1.1rem;color:var(--forest);padding-bottom:.9rem;border-bottom:1px solid var(--border2);margin-bottom:1.25rem;}
+.form-group{margin-bottom:.9rem;}
+.form-lbl{display:block;font-size:.72rem;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:.07em;margin-bottom:.35rem;}
+.form-inp,.form-sel{width:100%;padding:.6rem .85rem;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius2);color:var(--text);font-family:var(--body);font-size:.88rem;outline:none;transition:border-color var(--trans);}
+.form-inp:focus,.form-sel:focus{border-color:var(--teal);}
+.form-sel option{background:#fff;}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:.7rem;}
+.btn-submit{width:100%;padding:.7rem;margin-top:.25rem;background:var(--forest);color:#fff;border:none;border-radius:var(--radius2);font-family:var(--body);font-weight:600;font-size:.9rem;cursor:pointer;transition:background var(--trans),transform var(--trans);}
+.btn-submit:hover{background:var(--green);}
+.btn-submit:active{transform:scale(.98);}
+.msg-box{border-radius:var(--radius2);padding:.65rem 1rem;font-size:.82rem;margin-top:.75rem;display:none;}
+.msg-ok{background:rgba(34,197,94,.08);border:1px solid rgba(34,197,94,.2);color:#166534;}
+.msg-err{background:rgba(192,57,43,.08);border:1px solid rgba(192,57,43,.2);color:var(--red);}
+.pharm-bar{display:flex;align-items:center;gap:.75rem;margin-bottom:1.1rem;}
+.pharm-bar label{font-size:.82rem;color:var(--text3);flex-shrink:0;}
+.inv-table-wrap{overflow-x:auto;}
+table.inv{width:100%;border-collapse:collapse;font-size:.83rem;}
+table.inv th{text-align:left;padding:.5rem .75rem;font-size:.69rem;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:.07em;border-bottom:2px solid var(--border);}
+table.inv td{padding:.6rem .75rem;border-bottom:1px solid var(--border2);vertical-align:middle;}
+table.inv tr:last-child td{border-bottom:none;}
+table.inv tr:hover td{background:rgba(0,0,0,.015);}
+.btn-del{padding:.22rem .6rem;border-radius:5px;border:1px solid rgba(192,57,43,.2);background:rgba(192,57,43,.06);color:var(--red);cursor:pointer;font-size:.72rem;transition:background var(--trans);}
+.btn-del:hover{background:rgba(192,57,43,.15);}
+.btn-edit{padding:.22rem .6rem;border-radius:5px;border:1px solid rgba(64,145,108,.2);background:rgba(64,145,108,.06);color:var(--teal);cursor:pointer;font-size:.72rem;transition:background var(--trans);margin-right:.3rem;}
+.btn-edit:hover{background:rgba(64,145,108,.15);}
+
+/* price fetch status */
+.price-status-bar{
+  display:flex;align-items:center;gap:.5rem;
+  padding:.5rem .75rem;border-radius:8px;
+  background:rgba(64,145,108,.06);border:1px solid rgba(64,145,108,.15);
+  margin-bottom:.75rem;font-size:.76rem;color:var(--teal);
+  min-height:32px;
+}
+.price-status-bar.loading{color:var(--amber);background:rgba(212,131,10,.06);border-color:rgba(212,131,10,.2);}
+.price-status-bar.success{color:#166534;background:rgba(34,197,94,.07);border-color:rgba(34,197,94,.2);}
+.price-status-bar.fail{color:var(--text3);background:var(--surface);border-color:var(--border);}
+
+/* PHARMACIES VIEW */
+.pharma-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(290px,1fr));gap:1rem;}
+.pharma-card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:1.25rem;box-shadow:var(--shadow);transition:box-shadow var(--trans),transform var(--trans);}
+.pharma-card:hover{box-shadow:var(--shadow2);transform:translateY(-2px);}
+.pharma-card-name{font-weight:600;font-size:.95rem;color:var(--forest);margin-bottom:.4rem;}
+.pharma-detail{font-size:.78rem;color:var(--text3);margin-bottom:.2rem;display:flex;gap:.4rem;}
+.pharma-detail strong{color:var(--text2);}
+.pharma-rating{display:flex;align-items:center;gap:.3rem;margin-top:.6rem;}
+.stars{color:#d4830a;font-size:.85rem;}
+.rating-num{font-size:.78rem;color:var(--text3);}
+.open-badge{margin-left:auto;font-size:.68rem;padding:.18rem .55rem;border-radius:10px;background:rgba(34,197,94,.1);color:#166534;border:1px solid rgba(34,197,94,.2);font-weight:600;}
+.city-badge{font-size:.68rem;padding:.18rem .55rem;border-radius:10px;background:rgba(64,145,108,.1);color:var(--teal);border:1px solid rgba(64,145,108,.2);font-weight:600;margin-left:.4rem;}
+
+/* LOADING / EMPTY */
+.loading{display:flex;align-items:center;justify-content:center;gap:.75rem;padding:3rem;color:var(--text3);font-size:.9rem;}
+.spinner{width:18px;height:18px;border:2px solid rgba(64,145,108,.2);border-top-color:var(--teal);border-radius:50%;animation:spin .65s linear infinite;flex-shrink:0;}
+@keyframes spin{to{transform:rotate(360deg)}}
+.empty{text-align:center;padding:4rem 2rem;color:var(--text3);}
+.empty-icon{font-size:3rem;margin-bottom:.75rem;opacity:.35;}
+.empty h3{font-family:var(--head);font-size:1.1rem;color:var(--text2);}
+.empty p{font-size:.85rem;margin-top:.35rem;}
+
+/* TOAST */
+#toasts{position:fixed;bottom:1.5rem;right:1.5rem;z-index:9999;display:flex;flex-direction:column;gap:.4rem;}
+.toast{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:.7rem 1.1rem;display:flex;align-items:center;gap:.6rem;font-size:.83rem;min-width:260px;box-shadow:var(--shadow2);animation:toastIn .25s ease;}
+@keyframes toastIn{from{opacity:0;transform:translateY(12px)}}
+.toast.ok{border-left:3px solid var(--green-lt);}
+.toast.err{border-left:3px solid var(--red);}
+.toast.info{border-left:3px solid var(--teal);}
+
+/* MODAL */
+.modal-bg{position:fixed;inset:0;background:rgba(0,0,0,.35);z-index:500;display:flex;align-items:center;justify-content:center;padding:1rem;}
+.modal{background:var(--card);border-radius:14px;padding:1.75rem;width:100%;max-width:460px;box-shadow:var(--shadow2);max-height:90vh;overflow-y:auto;}
+.modal h3{font-family:var(--head);font-size:1.2rem;color:var(--forest);margin-bottom:1.25rem;}
+
+/* section divider in admin left panel */
+.section-divider{border:none;border-top:1px solid var(--border2);margin:1.25rem 0;}
+
+::-webkit-scrollbar{width:5px;}
+::-webkit-scrollbar-track{background:var(--bg);}
+::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px;}
+@media(max-width:600px){
+  .pharm-row{grid-template-columns:1fr;gap:.4rem;}
+  .nav-tabs .nav-tab span{display:none;}
+}
+
+/* ── Medicine category icons ── */
+.med-icon{
+  width:52px;height:52px;border-radius:12px;
+  display:flex;align-items:center;justify-content:center;
+  flex-shrink:0;
+  background:linear-gradient(135deg,rgba(45,106,79,.08),rgba(64,145,108,.15));
+  border:1px solid rgba(45,106,79,.15);
+  overflow:hidden;padding:6px;
+}
+.med-icon img{width:36px;height:36px;object-fit:contain;}
+/* ── Alert medicine image ── */
+.alert-med-img{
+  width:40px;height:40px;border-radius:10px;
+  background:linear-gradient(135deg,rgba(212,131,10,.08),rgba(212,97,19,.12));
+  border:1px solid rgba(212,131,10,.2);
+  display:flex;align-items:center;justify-content:center;
+  flex-shrink:0;padding:5px;
+}
+.alert-med-img img{width:28px;height:28px;object-fit:contain;}
+/* ── Expiry progress bar ── */
+.expiry-bar-wrap{margin-top:.5rem;}
+.expiry-bar-track{
+  height:5px;border-radius:4px;background:var(--border2);overflow:hidden;
+}
+.expiry-bar-fill{height:100%;border-radius:4px;transition:width .6s ease;}
+.expiry-bar-label{font-size:.68rem;color:var(--text3);margin-top:.2rem;display:flex;justify-content:space-between;}
+/* ── Map ── */
+#pharma-map{
+  height:420px;border-radius:var(--radius);
+  border:1px solid var(--border);
+  box-shadow:var(--shadow);
+  margin-bottom:1.5rem;
+}
+.leaflet-popup-content-wrapper{
+  border-radius:10px !important;
+  font-family:'Geist','Helvetica Neue',sans-serif !important;
+  font-size:.82rem !important;
+  box-shadow:0 4px 20px rgba(0,0,0,.12) !important;
+}
+.map-popup-name{font-weight:600;color:#1a3a2a;font-size:.9rem;margin-bottom:.3rem;}
+.map-popup-detail{color:#7a7a7a;font-size:.75rem;line-height:1.7;}
+.map-popup-badge{
+  display:inline-block;margin-top:.35rem;
+  font-size:.65rem;padding:2px 8px;border-radius:10px;
+  background:rgba(34,197,94,.1);color:#166534;border:1px solid rgba(34,197,94,.2);font-weight:600;
+}
+</style>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+</head>
+<body>
+
+<!-- ═══════════════ LOGIN OVERLAY ═══════════════ -->
+<div id="login-overlay">
+  <div class="login-card">
+    <div class="login-logo"><span class="logo-dot"></span> SmartRx</div>
+    <div class="login-tagline">Smart Pharmacy Inventory System v2.0</div>
+
+    <!-- Mode tabs: Login / Register -->
+    <div class="login-tabs" id="auth-mode-tabs">
+      <button class="login-tab active" onclick="switchAuthMode('login')">🔑 Login</button>
+      <button class="login-tab"        onclick="switchAuthMode('register')">📝 Register</button>
+    </div>
+
+    <!-- ── LOGIN FORM ── -->
+    <div id="auth-login-form">
+      <!-- Role subtabs -->
+      <div class="login-tabs" style="margin-bottom:1.2rem;">
+        <button class="login-tab active" id="tab-user"  onclick="switchLoginTab('user')">👤 User</button>
+        <button class="login-tab"        id="tab-admin" onclick="switchLoginTab('admin')">🔐 Admin</button>
+      </div>
+      <div class="login-field">
+        <label>Username</label>
+        <input type="text" id="login-username" placeholder="Enter username" autocomplete="off"/>
+      </div>
+      <div class="login-field">
+        <label>Password</label>
+        <input type="password" id="login-password" placeholder="Enter password"
+          onkeydown="if(event.key==='Enter')doLogin()"/>
+      </div>
+      <button class="login-btn" onclick="doLogin()">Login →</button>
+      <div style="text-align:center;margin-top:.8rem;font-size:.78rem;color:var(--text3);">
+        No account? <span onclick="switchAuthMode('register')"
+          style="color:var(--teal);cursor:pointer;font-weight:600;">Register here</span>
+      </div>
+    </div>
+
+    <!-- ── REGISTER FORM ── -->
+    <div id="auth-register-form" style="display:none">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:.7rem;">
+        <div class="login-field">
+          <label>Full Name *</label>
+          <input type="text" id="reg-name" placeholder="Rahul Sharma"/>
+        </div>
+        <div class="login-field">
+          <label>Username *</label>
+          <input type="text" id="reg-username" placeholder="rahul_123"/>
+        </div>
+        <div class="login-field">
+          <label>Email *</label>
+          <input type="email" id="reg-email" placeholder="rahul@email.com"/>
+        </div>
+        <div class="login-field">
+          <label>Phone</label>
+          <input type="text" id="reg-phone" placeholder="9876543210"/>
+        </div>
+        <div class="login-field">
+          <label>Age *</label>
+          <input type="number" id="reg-age" placeholder="25" min="1" max="120"/>
+        </div>
+        <div class="login-field">
+          <label>Gender</label>
+          <select id="reg-gender" style="width:100%;padding:.65rem .9rem;border:1.5px solid var(--border);border-radius:10px;background:var(--surface);color:var(--text);font-family:var(--body);font-size:.88rem;">
+            <option value="">Select</option>
+            <option>Male</option><option>Female</option><option>Other</option>
+          </select>
+        </div>
+        <div class="login-field">
+          <label>City *</label>
+          <select id="reg-city" style="width:100%;padding:.65rem .9rem;border:1.5px solid var(--border);border-radius:10px;background:var(--surface);color:var(--text);font-family:var(--body);font-size:.88rem;">
+            <option value="">Select city</option>
+            <option>Pune</option><option>Bangalore</option><option>Mumbai</option><option>Delhi</option><option>Other</option>
+          </select>
+        </div>
+        <div class="login-field">
+          <label>Password *</label>
+          <input type="password" id="reg-password" placeholder="Min 6 characters"/>
+        </div>
+      </div>
+      <div class="login-field" style="margin-top:-.2rem;">
+        <label>Confirm Password *</label>
+        <input type="password" id="reg-confirm" placeholder="Repeat password"
+          onkeydown="if(event.key==='Enter')doRegister()"/>
+      </div>
+      <button class="login-btn" onclick="doRegister()">Create Account →</button>
+      <div style="text-align:center;margin-top:.8rem;font-size:.78rem;color:var(--text3);">
+        Already have an account? <span onclick="switchAuthMode('login')"
+          style="color:var(--teal);cursor:pointer;font-weight:600;">Login here</span>
+      </div>
+    </div>
+
+    <div class="login-err" id="login-err"></div>
+
+    <!-- Hint only for login -->
+    <div class="login-hint" id="login-hint-box">
+      Demo → <strong>user</strong> / <strong>user123</strong> &nbsp;|&nbsp;
+      Admin → <strong>admin</strong> / <strong>admin@smartrx</strong>
+    </div>
+  </div>
+</div>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-inner">
+    <div class="logo"><span class="logo-dot"></span> SmartRx</div>
+    <div class="nav-tabs">
+      <button class="nav-tab active" onclick="showView('search',this)">🔍 <span data-i18n="nav_search">Search</span></button>
+      <button class="nav-tab" onclick="showView('alerts',this)" id="tab-alerts">
+        ⚠ <span data-i18n="nav_alerts">Alerts</span><span class="badge" id="alert-badge">0</span>
+      </button>
+      <button class="nav-tab" onclick="showView('pharmacies',this)">🏥 <span data-i18n="nav_pharmacies">Pharmacies</span></button>
+      <button class="nav-tab admin-only" onclick="showView('admin',this)" id="nav-admin">⚙ <span data-i18n="nav_admin">Admin</span></button>
+      <button class="nav-tab admin-only" onclick="showView('analytics',this)" id="nav-analytics">📊 <span>Analytics</span></button>
+      <button class="nav-tab admin-only" onclick="window.open('http://127.0.0.1:5000/expiry_dashboard','_blank')" style="background:linear-gradient(135deg,var(--teal),var(--forest));color:#fff;font-weight:600;">
+        🔮 <span data-i18n="nav_ai">AI Dashboard</span>
+      </button>
+    </div>
+    <div class="nav-controls">
+      <div class="lang-sel">
+        <button class="lang-btn active" onclick="setLang('en',this)">EN</button>
+        <button class="lang-btn" onclick="setLang('hi',this)">हि</button>
+        <button class="lang-btn" onclick="setLang('mr',this)">म</button>
+        <button class="lang-btn" onclick="setLang('kn',this)">ಕ</button>
+      </div>
+      <button class="theme-btn" id="theme-btn" onclick="toggleTheme()" title="Toggle Dark Mode">🌙</button>
+      <div class="role-badge" id="role-badge" onclick="doLogout()" title="Click to logout">
+        <span id="role-icon">👤</span>
+        <span id="role-name">User</span>
+        <span style="font-size:.65rem;opacity:.6;">✕</span>
+      </div>
+    </div>
+  </div>
+</nav>
+
+<!-- SEARCH VIEW -->
+<div id="view-search" class="view active">
+<div class="container">
+  <div class="hero">
+    <div class="hero-text">
+      <p class="eyebrow" data-i18n="hero_eyebrow">Data Structures in Action</p>
+      <h1><span data-i18n="hero_h1_1">Find Any Medicine,</span><br><em data-i18n="hero_h1_em">Anywhere.</em></h1>
+      <p data-i18n="hero_p">Real-time autocomplete powered by a Trie. Inventory lookup via a B+ Tree. Nearby pharmacies via QuadTree. Expiry alerts via Min-Heap.</p>
+      <div class="ds-chips">
+        <span class="ds-chip"><span>T</span> Trie — Autocomplete</span>
+        <span class="ds-chip"><span>B+</span> B+ Tree — Inventory</span>
+        <span class="ds-chip"><span>⛁</span> QuadTree — Location</span>
+        <span class="ds-chip"><span>⊕</span> Min-Heap — Expiry</span>
+      </div>
+    </div>
+    <div class="hero-search-card">
+      <h3>Search Medicines</h3>
+      <div class="search-wrap">
+        <div class="search-box">
+          <span class="icon">💊</span>
+          <input type="text" id="srch" placeholder="Type medicine name… e.g. para, insulin" autocomplete="off"/>
+          <button class="search-btn" onclick="doSearch()">Search</button>
+        </div>
+        <div class="ac-list" id="ac-list"></div>
+      </div>
+      <div class="loc-row">
+        <div class="loc-group">
+          <label>Lat</label>
+          <input type="number" id="u-lat" value="12.9716" step=".0001"/>
+        </div>
+        <div class="loc-group">
+          <label>Lon</label>
+          <input type="number" id="u-lon" value="77.5946" step=".0001"/>
+        </div>
+        <select class="radius-sel" id="u-radius">
+          <option value="5">5 km</option>
+          <option value="10">10 km</option>
+          <option value="20" selected>20 km</option>
+          <option value="50">50 km</option>
+          <option value="100">100 km</option>
+        </select>
+        <button class="loc-btn" onclick="setCity('bangalore')" id="city-blr" style="background:rgba(45,106,79,.12);border-color:var(--teal);color:var(--teal);font-weight:600;">🏙 Bangalore</button>
+        <button class="loc-btn" onclick="setCity('pune')" id="city-pune">🏙 Pune</button>
+        <button class="loc-btn" onclick="detectLoc()">📍 Detect</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Stats -->
+  <div class="stats-row" id="stats-row">
+    <div class="stat-card"><div class="stat-num" id="s-med">—</div><div class="stat-lbl">Medicines (Trie)</div></div>
+    <div class="stat-card"><div class="stat-num" id="s-inv">—</div><div class="stat-lbl">Inventory (B+ Tree)</div></div>
+    <div class="stat-card"><div class="stat-num" id="s-ph">—</div><div class="stat-lbl">Pharmacies (QuadTree)</div></div>
+    <div class="stat-card"><div class="stat-num amber" id="s-exp">—</div><div class="stat-lbl">Expiring &lt;7d</div></div>
+    <div class="stat-card"><div class="stat-num red" id="s-low">—</div><div class="stat-lbl">Low Stock (≤10)</div></div>
+  </div>
+
+  <!-- Results -->
+  <div class="results-section" id="results" style="display:none">
+    <div class="section-head">
+      <span class="section-title">Results</span>
+      <span class="count-chip" id="res-count">0</span>
+    </div>
+    <div id="res-body"></div>
+  </div>
+</div>
+</div>
+
+<!-- ALERTS VIEW -->
+<div id="view-alerts" class="view">
+<div class="container">
+  <div class="page-head">
+    <p class="page-eyebrow">Min-Heap Priority Queue</p>
+    <h2 class="page-title">Expiry Alerts</h2>
+  </div>
+  <div class="alerts-toolbar">
+    <div class="filter-group">
+      <button class="filter-btn active" onclick="loadAlerts(7,this)">7 Days</button>
+      <button class="filter-btn" onclick="loadAlerts(14,this)">14 Days</button>
+      <button class="filter-btn" onclick="loadAlerts(30,this)">30 Days</button>
+      <button class="filter-btn" onclick="loadAlerts(365,this)">All</button>
+    </div>
+    <div class="filter-group">
+      <button class="filter-btn active" id="af-all" onclick="filterAlertLevel('',this)">All</button>
+      <button class="filter-btn" onclick="filterAlertLevel('EXPIRED',this)">Expired</button>
+      <button class="filter-btn" onclick="filterAlertLevel('CRITICAL',this)">Critical</button>
+      <button class="filter-btn" onclick="filterAlertLevel('WARNING',this)">Warning</button>
+    </div>
+  </div>
+  <div class="alert-summary-grid" id="alert-summary"></div>
+  <div id="alerts-body"><div class="loading"><div class="spinner"></div>Loading…</div></div>
+</div>
+</div>
+
+<!-- PHARMACIES VIEW -->
+<div id="view-pharmacies" class="view">
+<div class="container">
+  <div class="page-head">
+    <p class="page-eyebrow">QuadTree Spatial Index</p>
+    <h2 class="page-title">All Pharmacies</h2>
+  </div>
+  <div id="pharma-filter" style="display:flex;gap:.5rem;margin-bottom:1.25rem;flex-wrap:wrap;"></div>
+  <!-- Interactive Map -->
+  <div id="pharma-map"></div>
+  <div id="pharma-body"><div class="loading"><div class="spinner"></div>Loading…</div></div>
+</div>
+</div>
+
+<!-- ADMIN VIEW -->
+<div id="view-admin" class="view">
+<div class="container">
+  <div class="page-head">
+    <p class="page-eyebrow">Pharmacy Owner Panel</p>
+    <h2 class="page-title">Admin Panel</h2>
+  </div>
+
+  <div class="admin-grid">
+    <!-- LEFT: Add Inventory + Add Pharmacy -->
+    <div style="display:flex;flex-direction:column;gap:1rem;">
+
+      <!-- Add Inventory Panel -->
+      <div class="panel">
+        <div class="panel-title">➕ Add Inventory Record</div>
+        <p style="font-size:.72rem;color:var(--red);margin-bottom:.9rem;">* All fields are mandatory</p>
+
+        <div class="form-group">
+          <label class="form-lbl">Medicine Name <span style="color:var(--red)">*</span></label>
+          <input class="form-inp" id="a-med" type="text" placeholder="e.g. Paracetamol 500mg" autocomplete="off"/>
+        </div>
+
+        <!-- Price status bar -->
+        <div class="price-status-bar" id="a-price-status">
+          💡 Type medicine name &amp; click away to auto-fetch price
+        </div>
+
+        <div class="form-group">
+          <label class="form-lbl">Category <span style="color:var(--red)">*</span></label>
+          <select class="form-sel" id="a-cat">
+            <option value="">— Select Category —</option>
+            <option>General</option><option>Painkiller</option><option>Antibiotic</option>
+            <option>Diabetes</option><option>Blood Pressure</option><option>Cholesterol</option>
+            <option>Respiratory</option><option>Antacid</option><option>Antihistamine</option>
+            <option>Supplement</option><option>Antifungal</option><option>Antidepressant</option>
+            <option>Neuropathic Pain</option><option>Anti-inflammatory</option>
+            <option>Thyroid</option><option>Anti-nausea</option><option>Blood Thinner</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-lbl">Pharmacy <span style="color:var(--red)">*</span></label>
+          <select class="form-sel" id="a-ph"></select>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-lbl">Quantity <span style="color:var(--red)">*</span></label>
+            <input class="form-inp" id="a-qty" type="number" placeholder="e.g. 100" min="1"/>
+          </div>
+          <div class="form-group">
+            <label class="form-lbl">MRP (₹) <span style="color:var(--red)">*</span></label>
+            <input class="form-inp" id="a-mrp" type="number" placeholder="Auto-filled" step=".01" min="0.01"/>
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-lbl">Unit Price (₹) <span style="color:var(--red)">*</span></label>
+            <input class="form-inp" id="a-price" type="number" placeholder="Auto-filled" step=".01" min="0.01"/>
+          </div>
+          <div class="form-group">
+            <label class="form-lbl">Batch Number <span style="color:var(--red)">*</span></label>
+            <input class="form-inp" id="a-batch" type="text" placeholder="e.g. BT250101"/>
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-lbl">Manufacture Date <span style="color:var(--red)">*</span></label>
+            <input class="form-inp" id="a-mfg" type="date"/>
+          </div>
+          <div class="form-group">
+            <label class="form-lbl">Expiry Date <span style="color:var(--red)">*</span></label>
+            <input class="form-inp" id="a-exp" type="date"/>
+          </div>
+        </div>
+        <button class="btn-submit" onclick="addInventory()">Add to Inventory</button>
+        <div class="msg-box msg-ok" id="a-ok">✅ Inventory added and all data structures updated!</div>
+        <div class="msg-box msg-err" id="a-err"></div>
+      </div>
+
+      <!-- Add New Pharmacy Panel -->
+      <div class="panel">
+        <div class="panel-title">🏥 Add New Pharmacy</div>
+        <p style="font-size:.72rem;color:var(--red);margin-bottom:.9rem;">* All fields are mandatory</p>
+        <div class="form-group">
+          <label class="form-lbl">Pharmacy Name <span style="color:var(--red)">*</span></label>
+          <input class="form-inp" id="np-name" type="text" placeholder="e.g. Apollo Pharmacy Baner"/>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-lbl">City <span style="color:var(--red)">*</span></label>
+            <select class="form-sel" id="np-city">
+              <option value="">— Select City —</option>
+              <option>Pune</option>
+              <option>Bangalore</option>
+              <option>Mumbai</option>
+              <option>Delhi</option>
+              <option>Hyderabad</option>
+              <option>Chennai</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-lbl">Area / Locality <span style="color:var(--red)">*</span></label>
+            <input class="form-inp" id="np-area" type="text" placeholder="e.g. Baner"/>
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-lbl">Full Address <span style="color:var(--red)">*</span></label>
+          <input class="form-inp" id="np-addr" type="text" placeholder="Street address"/>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-lbl">Phone <span style="color:var(--red)">*</span></label>
+            <input class="form-inp" id="np-phone" type="text" placeholder="020-XXXXXXXX"/>
+          </div>
+          <div class="form-group">
+            <label class="form-lbl">Pincode <span style="color:var(--red)">*</span></label>
+            <input class="form-inp" id="np-pin" type="text" placeholder="411045"/>
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-lbl">Latitude <span style="color:var(--red)">*</span></label>
+            <input class="form-inp" id="np-lat" type="number" placeholder="18.5590" step=".0001"/>
+          </div>
+          <div class="form-group">
+            <label class="form-lbl">Longitude <span style="color:var(--red)">*</span></label>
+            <input class="form-inp" id="np-lon" type="number" placeholder="73.7868" step=".0001"/>
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-lbl">Rating (0–5) <span style="color:var(--red)">*</span></label>
+            <input class="form-inp" id="np-rating" type="number" placeholder="4.5" step=".1" min="0" max="5"/>
+          </div>
+          <div class="form-group">
+            <label class="form-lbl">Open 24×7? <span style="color:var(--red)">*</span></label>
+            <select class="form-sel" id="np-24h">
+              <option value="0">No</option>
+              <option value="1">Yes ⏰</option>
+            </select>
+          </div>
+        </div>
+        <p style="font-size:.72rem;color:var(--text3);margin-bottom:.75rem;">
+          📍 Get lat/lon: Go to <strong>maps.google.com</strong> → right-click the location → click the coordinates shown.
+        </p>
+        <button class="btn-submit" onclick="addPharmacy()">Add Pharmacy</button>
+        <div class="msg-box msg-ok" id="np-ok">✅ Pharmacy added! Refresh page to see in dropdown.</div>
+        <div class="msg-box msg-err" id="np-err"></div>
+      </div>
+
+    </div><!-- /left col -->
+
+    <!-- RIGHT: Inventory Table -->
+    <div class="panel">
+      <div style="display:flex;align-items:center;justify-content:space-between;padding-bottom:.9rem;border-bottom:1px solid var(--border2);margin-bottom:1.25rem;">
+        <span style="font-family:var(--head);font-size:1.1rem;color:var(--forest)">📋 Pharmacy Inventory</span>
+        <div style="display:flex;gap:.5rem;">
+          <button onclick="exportExcel()" style="padding:.35rem .8rem;border:1px solid var(--border);border-radius:7px;background:var(--surface);cursor:pointer;font-size:.78rem;color:var(--text2);font-family:var(--body);">📥 Excel</button>
+          <button onclick="exportCSV()" style="padding:.35rem .8rem;border:1px solid var(--border);border-radius:7px;background:var(--surface);cursor:pointer;font-size:.78rem;color:var(--text2);font-family:var(--body);">📄 CSV</button>
+        </div>
+      </div>
+      <div class="pharm-bar">
+        <label>Pharmacy:</label>
+        <select class="form-sel" id="v-ph" onchange="loadInv()" style="flex:1"></select>
+      </div>
+      <div class="inv-table-wrap" id="inv-body">
+        <div class="loading"><div class="spinner"></div></div>
+      </div>
+    </div>
+
+  </div>
+</div>
+</div><!-- /admin -->
+
+<!-- ═══════════════ ANALYTICS VIEW ═══════════════ -->
+<div id="view-analytics" class="view">
+<div class="container">
+  <div style="margin-bottom:2rem;">
+    <p class="eyebrow">B+ Tree · QuadTree · Min-Heap · Trie</p>
+    <h2 style="font-family:var(--head);font-size:2rem;color:var(--forest);margin-bottom:.4rem;">System <em>Analytics</em></h2>
+    <p style="color:var(--text3);font-size:.9rem;">Live insights powered by your 4 data structures. Each chart is backed by a specific DSA.</p>
+  </div>
+
+  <!-- DSA stat cards -->
+  <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:.75rem;margin-bottom:2rem;">
+    <div class="stat-card" style="border-top:3px solid var(--teal);">
+      <div style="font-size:.62rem;font-weight:700;color:var(--teal);letter-spacing:.1em;text-transform:uppercase;margin-bottom:.3rem;">🔤 Trie</div>
+      <div class="stat-num" id="an-trie">—</div><div class="stat-lbl">Medicines Indexed</div>
+    </div>
+    <div class="stat-card" style="border-top:3px solid var(--green);">
+      <div style="font-size:.62rem;font-weight:700;color:var(--green);letter-spacing:.1em;text-transform:uppercase;margin-bottom:.3rem;">🌳 B+ Tree</div>
+      <div class="stat-num" id="an-bptree">—</div><div class="stat-lbl">Inventory Records</div>
+    </div>
+    <div class="stat-card" style="border-top:3px solid var(--blue);">
+      <div style="font-size:.62rem;font-weight:700;color:var(--blue);letter-spacing:.1em;text-transform:uppercase;margin-bottom:.3rem;">⛁ QuadTree</div>
+      <div class="stat-num" id="an-quad">—</div><div class="stat-lbl">Pharmacies Mapped</div>
+    </div>
+    <div class="stat-card" style="border-top:3px solid var(--amber);">
+      <div style="font-size:.62rem;font-weight:700;color:var(--amber);letter-spacing:.1em;text-transform:uppercase;margin-bottom:.3rem;">⊕ Min-Heap</div>
+      <div class="stat-num amber" id="an-heap">—</div><div class="stat-lbl">Expiring ≤30 Days</div>
+    </div>
+    <div class="stat-card" style="border-top:3px solid var(--red);">
+      <div style="font-size:.62rem;font-weight:700;color:var(--red);letter-spacing:.1em;text-transform:uppercase;margin-bottom:.3rem;">⚠ Risk</div>
+      <div class="stat-num red" id="an-low">—</div><div class="stat-lbl">Low Stock (≤10)</div>
+    </div>
+  </div>
+
+  <!-- Charts 2×2 grid -->
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:1.25rem;margin-bottom:1.25rem;min-height:0;">
+    <div class="stat-card" style="padding:1.25rem;overflow:hidden;min-height:0;">
+      <div style="margin-bottom:.9rem;">
+        <div style="font-weight:700;color:var(--forest);">Stock by Category</div>
+        <div style="font-size:.7rem;color:var(--teal);font-weight:600;">🌳 B+ Tree Range Query</div>
+      </div>
+      <div style="position:relative;height:180px;width:100%;overflow:hidden;">
+        <canvas id="chart-category"></canvas>
+      </div>
+    </div>
+    <div class="stat-card" style="padding:1.25rem;overflow:hidden;min-height:0;">
+      <div style="margin-bottom:.9rem;">
+        <div style="font-weight:700;color:var(--forest);">Pune vs Bangalore</div>
+        <div style="font-size:.7rem;color:var(--blue);font-weight:600;">⛁ QuadTree Spatial Query</div>
+      </div>
+      <div style="position:relative;height:180px;width:100%;overflow:hidden;">
+        <canvas id="chart-city"></canvas>
+      </div>
+    </div>
+  </div>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:1.25rem;margin-bottom:1.5rem;min-height:0;">
+    <div class="stat-card" style="padding:1.25rem;overflow:hidden;min-height:0;">
+      <div style="margin-bottom:.9rem;">
+        <div style="font-weight:700;color:var(--forest);">Expiry Risk Breakdown</div>
+        <div style="font-size:.7rem;color:var(--amber);font-weight:600;">⊕ Min-Heap Priority Queue</div>
+      </div>
+      <div style="position:relative;height:180px;width:100%;overflow:hidden;">
+        <canvas id="chart-expiry"></canvas>
+      </div>
+    </div>
+    <div class="stat-card" style="padding:1.25rem;overflow:hidden;min-height:0;">
+      <div style="margin-bottom:.9rem;">
+        <div style="font-weight:700;color:var(--forest);">Top 8 Stocked Medicines</div>
+        <div style="font-size:.7rem;color:var(--teal);font-weight:600;">🔤 Trie + B+ Tree Lookup</div>
+      </div>
+      <div style="position:relative;height:180px;width:100%;overflow:hidden;">
+        <canvas id="chart-topmeds"></canvas>
+      </div>
+    </div>
+  </div>
+
+  <!-- PDF button -->
+  <div style="display:flex;justify-content:flex-end;gap:.75rem;">
+    <button id="pdf-btn" onclick="generatePDF()" style="
+      display:flex;align-items:center;gap:.6rem;padding:.7rem 1.6rem;
+      background:var(--forest);color:#fff;border:none;border-radius:10px;
+      font-family:var(--body);font-size:.9rem;font-weight:700;cursor:pointer;
+      box-shadow:var(--shadow2);transition:background var(--trans);"
+      onmouseover="this.style.background='var(--green)'"
+      onmouseout="this.style.background='var(--forest)'">
+      🖨️ Download PDF Report
+    </button>
+  </div>
+</div>
+</div><!-- /analytics -->
+
+<!-- TOAST container -->
+<div id="toasts"></div>
+
+<!-- Edit modal -->
+<div id="edit-modal" style="display:none" class="modal-bg">
+  <div class="modal">
+    <h3>✏ Edit Inventory Record</h3>
+    <input type="hidden" id="e-id"/>
+    <div style="font-size:.8rem;color:var(--text3);margin-bottom:1rem;" id="e-med-name"></div>
+    <div class="form-row">
+      <div class="form-group">
+        <label class="form-lbl">Quantity</label>
+        <input class="form-inp" id="e-qty" type="number" min="0"/>
+      </div>
+      <div class="form-group">
+        <label class="form-lbl">Unit Price (₹)</label>
+        <input class="form-inp" id="e-price" type="number" step=".01"/>
+      </div>
+    </div>
+    <div class="form-row">
+      <div class="form-group">
+        <label class="form-lbl">MRP (₹)</label>
+        <input class="form-inp" id="e-mrp" type="number" step=".01"/>
+      </div>
+      <div class="form-group">
+        <label class="form-lbl">Expiry Date</label>
+        <input class="form-inp" id="e-exp" type="date"/>
+      </div>
+    </div>
+    <div class="form-group">
+      <label class="form-lbl">Batch Number</label>
+      <input class="form-inp" id="e-batch" type="text"/>
+    </div>
+    <div style="display:flex;gap:.6rem;margin-top:.5rem">
+      <button class="btn-submit" onclick="saveEdit()" style="flex:1">Save Changes</button>
+      <button onclick="closeEdit()" style="flex:.4;padding:.7rem;border:1px solid var(--border);border-radius:var(--radius2);background:transparent;cursor:pointer;font-family:var(--body)">Cancel</button>
+    </div>
+  </div>
+</div>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<script>
+const API = 'http://127.0.0.1:5000/api/v1';
+
+// =========================================================================
+// REAL MEDICINE PRICES (verified from 1mg/Jan Aushadhi — Indian MRP 2025)
+// Used as fallback when live fetch fails
+// =========================================================================
+const PRICE_DB = {
+  "paracetamol":(1.2),"paracetamol 500mg":(1.2),"paracetamol 650mg":(1.5),
+  "paracetamol syrup":(40),"ibuprofen":(1.8),"ibuprofen 200mg":(1.5),
+  "ibuprofen 400mg":(1.8),"ibuprofen 600mg":(3.0),"aspirin 75mg":(1.0),
+  "aspirin 325mg":(1.5),"amoxicillin 250mg":(6.0),"amoxicillin 500mg":(9.0),
+  "amoxicillin syrup":(90),"amoxicillin-clavulanate":(30),"azithromycin 250mg":(20),
+  "azithromycin 500mg":(35),"cetirizine 5mg":(1.2),"cetirizine 10mg":(1.5),
+  "cetirizine syrup":(50),"metformin 500mg":(1.5),"metformin 850mg":(2.0),
+  "metformin 1000mg":(2.5),"metformin sr 500mg":(3.0),"sitagliptin 100mg":(55),
+  "insulin glargine":(1247),"insulin lispro":(998),"insulin regular":(200),
+  "omeprazole 20mg":(3.0),"omeprazole 40mg":(5.0),"pantoprazole 40mg":(4.0),
+  "atorvastatin 10mg":(5.0),"atorvastatin 20mg":(8.0),"atorvastatin 40mg":(12),
+  "rosuvastatin 10mg":(10),"amlodipine 5mg":(3.0),"amlodipine 10mg":(4.0),
+  "losartan 50mg":(5.0),"losartan 100mg":(8.0),"telmisartan 40mg":(8.0),
+  "metoprolol 50mg":(3.5),"atenolol 50mg":(2.0),"clopidogrel 75mg":(10),
+  "warfarin 5mg":(7.0),"levothyroxine 100mcg":(2.0),"ciprofloxacin 500mg":(8.0),
+  "doxycycline 100mg":(8.0),"metronidazole 400mg":(2.5),"fluconazole 150mg":(30),
+  "salbutamol inhaler":(150),"montelukast 10mg":(15),"budesonide inhaler":(300),
+  "tramadol 50mg":(5.0),"diclofenac 50mg":(3.0),"diclofenac gel":(60),
+  "vitamin d3 1000iu":(3.0),"vitamin d3 60000iu":(30),"vitamin b12 500mcg":(4.0),
+  "ondansetron 4mg":(5.0),"ondansetron 8mg":(8.0),"domperidone 10mg":(2.0),
+  "ors sachet":(5.0),"sertraline 50mg":(10),"escitalopram 10mg":(10),
+  "gabapentin 300mg":(10),"pregabalin 75mg":(15),"prednisolone 5mg":(1.5),
+  "folic acid 5mg":(1.0),"ferrous sulfate":(1.5),"zinc sulfate 20mg":(2.0),
+  "calcium + vitamin d3":(5.0),"pantoprazole + domperidone":(7.0),
+  "bromhexine 8mg":(3.0),"ambroxol 30mg":(2.5),"chlorpheniramine 4mg":(1.0),
+};
+
+function getPriceFromDB(name){
+  const key = name.toLowerCase().trim();
+  const mrp = PRICE_DB[key];
+  if(mrp) return {mrp: mrp, unit_price: parseFloat((mrp*0.8).toFixed(2)), source:'local'};
+  // try partial match
+  for(const [k,v] of Object.entries(PRICE_DB)){
+    if(key.includes(k) || k.includes(key)){
+      return {mrp: v, unit_price: parseFloat((v*0.8).toFixed(2)), source:'local'};
+    }
+  }
+  return null;
+}
+
+// =========================================================================
+// LIVE PRICE FETCH (tries PharmEasy via proxy, falls back to local DB)
+// =========================================================================
+async function fetchLivePrice(medName){
+  const statusEl = document.getElementById('a-price-status');
+  statusEl.className = 'price-status-bar loading';
+  statusEl.textContent = '🔍 Fetching real-time price from PharmEasy...';
+
+  try{
+    const target = encodeURIComponent(`https://pharmeasy.in/api/search/v4/products?name=${encodeURIComponent(medName)}&page=1`);
+    const url    = `https://api.allorigins.win/get?url=${target}`;
+    const res    = await fetch(url, {signal: AbortSignal.timeout(6000)});
+    const data   = await res.json();
+    const json   = JSON.parse(data.contents);
+    const products = json?.data?.productList || [];
+
+    if(products.length > 0){
+      const first = products[0];
+      const mrp   = parseFloat(first.mrp || 0);
+      const price = parseFloat(first.sellingPrice || mrp * 0.8);
+      if(mrp > 0){
+        document.getElementById('a-mrp').value   = mrp.toFixed(2);
+        document.getElementById('a-price').value = price.toFixed(2);
+        statusEl.className = 'price-status-bar success';
+        statusEl.innerHTML = `✅ Live: <strong>${first.name}</strong> — MRP ₹${mrp.toFixed(2)} <span style="opacity:.7;font-size:.7rem">(PharmEasy)</span>`;
+        return;
+      }
+    }
+    throw new Error('no results');
+  } catch(e){
+    // Fallback to local price DB
+    const local = getPriceFromDB(medName);
+    if(local){
+      document.getElementById('a-mrp').value   = local.mrp.toFixed(2);
+      document.getElementById('a-price').value = local.unit_price.toFixed(2);
+      statusEl.className = 'price-status-bar success';
+      statusEl.innerHTML = `✅ Price found: MRP ₹${local.mrp.toFixed(2)} <span style="opacity:.7;font-size:.7rem">(Verified Indian MRP)</span>`;
+    } else {
+      statusEl.className = 'price-status-bar fail';
+      statusEl.textContent = '⚠ Price not found — enter manually';
+    }
+  }
+}
+
+// Attach blur listener once on page load
+document.addEventListener('DOMContentLoaded', ()=>{
+  document.getElementById('a-med').addEventListener('blur', function(){
+    const name = this.value.trim();
+    if(name.length > 1) fetchLivePrice(name);
+  });
+});
+
+// =========================================================================
+// VIEW SWITCHER
+// =========================================================================
+function showView(name, btn){
+  if(guardAdmin(name)) return;
+  document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
+  document.querySelectorAll('.nav-tab').forEach(t=>t.classList.remove('active'));
+  document.getElementById('view-'+name).classList.add('active');
+  if(btn) btn.classList.add('active');
+  if(name==='alerts')     loadAlerts(7);
+  if(name==='pharmacies') loadPharmacies();
+  if(name==='admin')      initAdmin();
+  if(name==='analytics')  loadAnalytics();
+}
+
+// =========================================================================
+// DASHBOARD STATS
+// =========================================================================
+async function loadStats(){
+  try{
+    const d = await api('GET','/dashboard');
+    document.getElementById('s-med').textContent = d.data?.ds?.trie_medicines ?? d.data?.total_medicines ?? '—';
+    document.getElementById('s-inv').textContent = d.data?.ds?.bptree_records ?? d.data?.total_inventory ?? '—';
+    document.getElementById('s-ph' ).textContent = d.data?.ds?.quadtree_pharmacies ?? d.data?.total_pharmacies ?? '—';
+    document.getElementById('s-exp').textContent = d.data?.expiring_7d ?? '—';
+    document.getElementById('s-low').textContent = d.data?.low_stock_count ?? '—';
+    const alertN = (d.data?.expiry_summary?.expired||0)+(d.data?.expiry_summary?.critical||0)+(d.data?.expiry_summary?.warning||0);
+    document.getElementById('alert-badge').textContent = alertN;
+  }catch(e){console.warn('Stats',e);}
+}
+
+// =========================================================================
+// AUTOCOMPLETE
+// =========================================================================
+let _acTimer = null;
+document.getElementById('srch').addEventListener('input', function(){
+  clearTimeout(_acTimer);
+  const q = this.value.trim();
+  if(q.length<1){hideAC();return;}
+  _acTimer = setTimeout(()=>fetchAC(q), 160);
+});
+document.getElementById('srch').addEventListener('keydown', e=>{
+  if(e.key==='Enter'){hideAC();doSearch();}
+  if(e.key==='Escape') hideAC();
+});
+document.addEventListener('click', e=>{if(!e.target.closest('.search-wrap')) hideAC();});
+
+async function fetchAC(q){
+  try{
+    const d = await api('GET',`/medicines/autocomplete?q=${encodeURIComponent(q)}&limit=8`);
+    const names = (d.data||[]).map(s=>s.name||s);
+    if(!names.length){hideAC();return;}
+    const list = document.getElementById('ac-list');
+    list.innerHTML = names.map(n=>`
+      <div class="ac-item" onclick="pickSug('${n.replace(/'/g,"\\'")}')">
+        <span class="ac-icon">💊</span>${n}
+        <span class="ac-tag">Medicine</span>
+      </div>`).join('');
+    list.classList.add('show');
+  }catch{hideAC();}
+}
+
+function hideAC(){document.getElementById('ac-list').classList.remove('show');}
+function pickSug(n){document.getElementById('srch').value=n;hideAC();doSearch();}
+
+// =========================================================================
+// SEARCH
+// =========================================================================
+async function doSearch(){
+  const q      = document.getElementById('srch').value.trim();
+  const lat    = document.getElementById('u-lat').value;
+  const lon    = document.getElementById('u-lon').value;
+  const radius = document.getElementById('u-radius').value;
+  if(!q){toast('Enter a medicine name.','err');return;}
+
+  const sec  = document.getElementById('results');
+  const body = document.getElementById('res-body');
+  sec.style.display='block';
+  body.innerHTML='<div class="loading"><div class="spinner"></div>Trie → B+Tree → QuadTree pipeline running…</div>';
+
+  try{
+    const d = await api('GET',`/medicines/search?q=${encodeURIComponent(q)}&lat=${lat}&lon=${lon}&radius=${radius}`);
+    const res = d.data?.results || [];
+    document.getElementById('res-count').textContent = res.length+' medicine'+(res.length!==1?'s':'');
+    if(!res.length){
+      body.innerHTML='<div class="empty"><div class="empty-icon">🔍</div><h3>No results found</h3><p>Try a shorter prefix or increase the radius.</p></div>';
+      return;
+    }
+    body.innerHTML = res.map((m,i)=>renderMed(m,i)).join('');
+  }catch(e){
+    body.innerHTML='<div class="empty"><div class="empty-icon">⚠</div><h3>Connection Error</h3><p>Make sure the Flask server is running on port 5000.</p></div>';
+  }
+}
+
+// =========================================================================
+// MEDICINE CATEGORY — INLINE SVG (rendered directly, works 100% offline)
+// =========================================================================
+const SVG = {
+  pill: `<svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg" width="36" height="36"><g transform="rotate(-45 32 32)"><ellipse cx="32" cy="32" rx="26" ry="13" fill="#2d6a4f"/><ellipse cx="32" cy="32" rx="26" ry="13" fill="none" stroke="#fff" stroke-width="1.5"/><line x1="32" y1="19" x2="32" y2="45" stroke="#fff" stroke-width="1.5"/></g></svg>`,
+
+  syringe: `<svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg" width="36" height="36"><rect x="28" y="10" width="8" height="28" rx="4" fill="#40916c"/><rect x="30" y="38" width="4" height="14" rx="2" fill="#1a3a2a"/><rect x="22" y="16" width="20" height="3" rx="1.5" fill="#1a3a2a"/><circle cx="32" cy="11" r="5" fill="#52b788"/><line x1="32" y1="52" x2="32" y2="58" stroke="#1a3a2a" stroke-width="3" stroke-linecap="round"/></svg>`,
+
+  heart: `<svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg" width="36" height="36"><path d="M32 52 C32 52 8 37 8 22 C8 14 14 8 22 8 C26 8 30 10 32 14 C34 10 38 8 42 8 C50 8 56 14 56 22 C56 37 32 52 32 52Z" fill="#c0392b"/><polyline points="20,28 25,36 32,22 38,32 44,28" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>`,
+
+  lungs: `<svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg" width="36" height="36"><line x1="32" y1="10" x2="32" y2="30" stroke="#1a3a2a" stroke-width="3" stroke-linecap="round"/><ellipse cx="18" cy="40" rx="12" ry="16" fill="#52b788" opacity="0.9"/><ellipse cx="46" cy="40" rx="12" ry="16" fill="#52b788" opacity="0.9"/><path d="M32 30 Q18 30 18 40" stroke="#1a3a2a" stroke-width="2" fill="none"/><path d="M32 30 Q46 30 46 40" stroke="#1a3a2a" stroke-width="2" fill="none"/></svg>`,
+
+  brain: `<svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg" width="36" height="36"><ellipse cx="22" cy="32" rx="15" ry="19" fill="#d46113" opacity="0.85"/><ellipse cx="42" cy="32" rx="15" ry="19" fill="#d46113" opacity="0.85"/><rect x="29" y="13" width="6" height="38" rx="3" fill="#f4f1eb"/></svg>`,
+
+  vitamin: `<svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg" width="36" height="36"><circle cx="32" cy="32" r="26" fill="#d4830a"/><text x="32" y="40" text-anchor="middle" font-size="24" font-weight="bold" fill="#fff" font-family="Arial,sans-serif">V</text></svg>`,
+
+  blood: `<svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg" width="36" height="36"><path d="M32 8 Q46 22 46 36 C46 46 40 56 32 56 C24 56 18 46 18 36 Q18 22 32 8Z" fill="#c0392b"/><ellipse cx="32" cy="38" rx="6" ry="4" fill="#fff" opacity="0.3"/></svg>`,
+
+  pharmacy: `<svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg" width="36" height="36"><rect x="8" y="28" width="48" height="28" rx="3" fill="#2d6a4f"/><polygon points="4,30 32,8 60,30" fill="#1a3a2a"/><rect x="26" y="36" width="12" height="20" rx="2" fill="#f4f1eb"/><rect x="12" y="34" width="10" height="10" rx="2" fill="#52b788"/><rect x="42" y="34" width="10" height="10" rx="2" fill="#52b788"/><rect x="29" y="29" width="6" height="12" rx="1" fill="#fff"/><rect x="26" y="32" width="12" height="6" rx="1" fill="#fff"/></svg>`,
+};
+
+const CAT_SVG = {
+  'Painkiller':       SVG.pill,
+  'Antibiotic':       SVG.syringe,
+  'Diabetes':         SVG.syringe,
+  'Blood Pressure':   SVG.heart,
+  'Cholesterol':      SVG.heart,
+  'Respiratory':      SVG.lungs,
+  'Antacid':          SVG.pill,
+  'Antihistamine':    SVG.pill,
+  'Supplement':       SVG.vitamin,
+  'Antifungal':       SVG.pill,
+  'Antidepressant':   SVG.brain,
+  'Thyroid':          SVG.pill,
+  'Anti-nausea':      SVG.pill,
+  'Blood Thinner':    SVG.blood,
+  'Neuropathic Pain': SVG.brain,
+  'Anti-inflammatory':SVG.pill,
+  'General':          SVG.pill,
+};
+
+function medIcon(cat){ return CAT_SVG[cat] || SVG.pill; }
+
+function renderMed(m, idx){
+  const has  = m.pharmacies && m.pharmacies.length>0;
+  const rows = has ? m.pharmacies.map(ph=>{
+    const qty  = ph.quantity;
+    const qc   = qty<=10?'low':'';
+    const es   = ph.expiry_status || {};
+    const ec   = es.level==='EXPIRED'||es.level==='CRITICAL' ? 'badge-danger'
+                 : es.level==='WARNING' ? 'badge-warn' : 'badge-ok';
+    const distBadge = ph.distance_km!==undefined
+      ? `<span class="badge-base badge-dist">📍 ${ph.distance_str||ph.distance_km.toFixed(1)+' km'}</span>` : '';
+
+    const mrp   = parseFloat(ph.mrp||0);
+    const upr   = parseFloat(ph.unit_price||0);
+    let priceHtml = '';
+    if(mrp>0){
+      priceHtml = `<div class="pharm-price">
+        <div class="mrp">₹${mrp.toFixed(2)}</div>
+        <div style="font-size:.68rem;color:var(--text3)">MRP</div>
+        ${upr>0 && upr!==mrp ? `<div class="cost">Cost ₹${upr.toFixed(2)}</div>` : ''}
+      </div>`;
+    } else {
+      // Try local price DB
+      const local = getPriceFromDB(m.medicine_name);
+      if(local){
+        priceHtml = `<div class="pharm-price">
+          <div class="mrp">₹${local.mrp.toFixed(2)}</div>
+          <div style="font-size:.68rem;color:var(--text3)">MRP</div>
+        </div>`;
+      } else {
+        priceHtml = `<div class="pharm-price" style="color:var(--text3);font-size:.75rem">—</div>`;
+      }
+    }
+
+    return `<div class="pharm-row">
+      <div>
+        <div class="pharm-name">${ph.pharmacy_name}</div>
+        <div class="pharm-addr">${ph.address||''}</div>
+        ${ph.latitude ? `<a href="https://www.openstreetmap.org/?mlat=${ph.latitude}&mlon=${ph.longitude}&zoom=16" target="_blank" style="font-size:.7rem;color:var(--teal);text-decoration:none;">🗺 View on Map</a>` : ''}
+      </div>
+      <span class="badge-base badge-qty ${qc}">Qty ${qty}</span>
+      ${distBadge}
+      <span class="badge-base ${ec}">${es.label||ph.expiry_date}</span>
+      ${priceHtml}
+    </div>`;
+  }).join('')
+  : '<div style="padding:1rem 1.5rem;color:var(--text3);font-size:.85rem">Not available nearby. Try a wider radius.</div>';
+
+  const rxTag = m.requires_rx ? '<span class="tag rx">Rx</span>' : '';
+  const dfTag = m.dosage_form  ? `<span class="tag">${m.dosage_form}</span>` : '';
+
+  return `<div class="med-card" style="animation-delay:${idx*50}ms">
+    <div class="med-card-head">
+      <div style="display:flex;align-items:center;gap:.85rem;">
+        <div class="med-icon">${medIcon(m.category)}</div>
+        <div>
+          <div class="med-name">${m.medicine_name}</div>
+          <div class="med-meta">
+            <span class="tag">${m.category||'General'}</span>${dfTag}${rxTag}
+            ${m.description?`<span class="tag" style="max-width:220px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${m.description}</span>`:''}
+          </div>
+        </div>
+      </div>
+      <div class="stock-pill">
+        <span class="dot ${has?'':'none'}"></span>
+        ${has?m.in_stock_count+' pharm.':'No stock nearby'}
+      </div>
+    </div>
+    <div class="pharm-list">${rows}</div>
+  </div>`;
+}
+
+// =========================================================================
+// LOCATION
+// =========================================================================
+function detectLoc(){
+  if(!navigator.geolocation){toast('Geolocation not supported.','err');return;}
+  navigator.geolocation.getCurrentPosition(
+    p=>{
+      document.getElementById('u-lat').value=p.coords.latitude.toFixed(4);
+      document.getElementById('u-lon').value=p.coords.longitude.toFixed(4);
+      toast('Location detected!','ok');
+    },
+    ()=>toast('Could not detect location. Enable location permission.','err')
+  );
+}
+
+function setCity(city){
+  const coords = {
+    bangalore:{ lat:12.9716, lon:77.5946 },
+    pune:     { lat:18.5196, lon:73.8553 },
+  };
+  const c = coords[city];
+  if(!c) return;
+  document.getElementById('u-lat').value = c.lat;
+  document.getElementById('u-lon').value = c.lon;
+  // Highlight active city button
+  document.getElementById('city-blr').style.background  = city==='bangalore' ? 'rgba(45,106,79,.12)' : '';
+  document.getElementById('city-blr').style.borderColor = city==='bangalore' ? 'var(--teal)' : '';
+  document.getElementById('city-blr').style.color       = city==='bangalore' ? 'var(--teal)' : '';
+  document.getElementById('city-blr').style.fontWeight  = city==='bangalore' ? '600' : '';
+  document.getElementById('city-pune').style.background  = city==='pune' ? 'rgba(29,78,216,.12)' : '';
+  document.getElementById('city-pune').style.borderColor = city==='pune' ? '#1d4ed8' : '';
+  document.getElementById('city-pune').style.color       = city==='pune' ? '#1d4ed8' : '';
+  document.getElementById('city-pune').style.fontWeight  = city==='pune' ? '600' : '';
+  toast(`📍 Location set to ${city.charAt(0).toUpperCase()+city.slice(1)}`, 'ok');
+}
+
+// =========================================================================
+// ALERTS
+// =========================================================================
+let _allAlerts=[], _alertLvl='';
+
+async function loadAlerts(days, btn){
+  if(btn){
+    document.querySelectorAll('.filter-group:first-child .filter-btn').forEach(b=>b.classList.remove('active'));
+    btn.classList.add('active');
+  }
+  document.getElementById('alerts-body').innerHTML='<div class="loading"><div class="spinner"></div>Querying Min-Heap…</div>';
+  try{
+    const d = await api('GET',`/alerts?days=${days}`);
+    _allAlerts = d.data?.alerts||[];
+    renderAlertSummary(d.data?.summary||{});
+    renderAlerts();
+  }catch{
+    document.getElementById('alerts-body').innerHTML='<div class="empty"><div class="empty-icon">⚠</div><h3>Could not load alerts</h3></div>';
+  }
+}
+
+function filterAlertLevel(lvl, btn){
+  document.querySelectorAll('.filter-group:last-child .filter-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  _alertLvl=lvl;
+  renderAlerts();
+}
+
+function renderAlertSummary(s){
+  document.getElementById('alert-summary').innerHTML=`
+    <div class="a-stat"><div class="a-num expired">${s.expired||0}</div><div class="a-lbl">Expired</div></div>
+    <div class="a-stat"><div class="a-num critical">${s.critical||0}</div><div class="a-lbl">Critical (0–2d)</div></div>
+    <div class="a-stat"><div class="a-num warning">${s.warning||0}</div><div class="a-lbl">Warning (3–7d)</div></div>
+    <div class="a-stat"><div class="a-num ok">${s.ok||0}</div><div class="a-lbl">Safe</div></div>`;
+}
+
+function renderAlerts(){
+  const body = document.getElementById('alerts-body');
+  const list = _alertLvl ? _allAlerts.filter(a=>a.alert_level===_alertLvl) : _allAlerts;
+  if(!list.length){
+    body.innerHTML='<div class="empty"><div class="empty-icon">✅</div><h3>No alerts in this window</h3><p>All medicines are safely within expiry.</p></div>';
+    return;
+  }
+  body.innerHTML = list.map((a,i)=>{
+    const d  = a.days_until_expiry;
+    const dc = a.is_expired?'expired':a.alert_level==='CRITICAL'?'critical':'warning';
+    const dt = a.is_expired?`${Math.abs(d)}d`:`${d}d`;
+    const dl = a.is_expired?'ago':'left';
+    const mrp = parseFloat(a.mrp||a.unit_price||0);
+    const priceStr = mrp>0 ? ` &nbsp;·&nbsp; ₹${mrp.toFixed(2)} MRP` : '';
+
+    // Progress bar — 0% = expired, 100% = 30+ days safe
+    const maxDays = 30;
+    const barPct  = a.is_expired ? 0 : Math.min(100, Math.round((d / maxDays) * 100));
+    const barColor = a.is_expired ? 'var(--red)'
+                   : a.alert_level==='CRITICAL' ? 'var(--orange)'
+                   : a.alert_level==='WARNING'  ? 'var(--amber)'
+                   : 'var(--green-lt)';
+
+    return `<div class="alert-item ${a.alert_level}" style="animation-delay:${i*35}ms">
+      <span class="alert-lvl-badge ${a.alert_level}">${a.alert_level}</span>
+      <div class="alert-med-img">
+        ${SVG.pill}
+      </div>
+      <div class="alert-info">
+        <div class="alert-med">💊 ${a.medicine_name}</div>
+        <div class="alert-sub">🏥 ${a.pharmacy_name} &nbsp;·&nbsp; Qty: ${a.quantity}${priceStr} &nbsp;·&nbsp; Exp: ${a.expiry_date} &nbsp;·&nbsp; Batch: ${a.batch_number||'—'}</div>
+        <div class="expiry-bar-wrap">
+          <div class="expiry-bar-track">
+            <div class="expiry-bar-fill" style="width:${barPct}%;background:${barColor}"></div>
+          </div>
+          <div class="expiry-bar-label">
+            <span>${a.is_expired ? 'Expired' : d+' days remaining'}</span>
+            <span style="color:${barColor};font-weight:600">${barPct}% safe</span>
+          </div>
+        </div>
+      </div>
+      <div class="alert-days-col">
+        <div class="alert-num ${dc}">${dt}</div>
+        <div class="alert-unit">${dl}</div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+// =========================================================================
+// PHARMACIES VIEW
+// =========================================================================
+let _pharmData = [];
+let _pharmCityFilter = '';
+let _leafletMap = null;
+
+async function loadPharmacies(){
+  document.getElementById('pharma-body').innerHTML='<div class="loading"><div class="spinner"></div>Loading QuadTree…</div>';
+  try{
+    const d = await api('GET','/pharmacies');
+    _pharmData = d.data?.pharmacies||[];
+    if(!_pharmData.length){
+      document.getElementById('pharma-body').innerHTML='<div class="empty"><div class="empty-icon">🏥</div><h3>No pharmacies found</h3></div>';
+      return;
+    }
+    // Build city filter buttons
+    const cities = [...new Set(_pharmData.map(p=>p.city||'Other').filter(Boolean))].sort();
+    document.getElementById('pharma-filter').innerHTML =
+      `<button class="filter-btn active" onclick="filterPharmCity('',this)">All (${_pharmData.length})</button>` +
+      cities.map(c=>{
+        const cnt = _pharmData.filter(p=>p.city===c).length;
+        return `<button class="filter-btn" onclick="filterPharmCity('${c}',this)">${c} (${cnt})</button>`;
+      }).join('');
+
+    renderMap(_pharmData);
+    renderPharmacies();
+  }catch{
+    document.getElementById('pharma-body').innerHTML='<div class="empty"><div class="empty-icon">⚠</div><h3>Could not load pharmacies</h3></div>';
+  }
+}
+
+function renderMap(list){
+  // Destroy old map instance if exists
+  if(_leafletMap){ _leafletMap.remove(); _leafletMap=null; }
+
+  // If no pharmacies with coords, show empty map centred on India
+  const valid = list.filter(p=>parseFloat(p.latitude)&&parseFloat(p.longitude));
+  if(!valid.length){
+    _leafletMap = L.map('pharma-map').setView([15.5, 75.5], 5);
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{
+      attribution:'© <a href="https://openstreetmap.org">OpenStreetMap</a>',maxZoom:19
+    }).addTo(_leafletMap);
+    return;
+  }
+
+  // Start map — will fit bounds to show ALL markers
+  _leafletMap = L.map('pharma-map');
+
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    attribution: '© <a href="https://openstreetmap.org">OpenStreetMap</a>',
+    maxZoom: 19
+  }).addTo(_leafletMap);
+
+  const markers = [];
+
+  valid.forEach(ph=>{
+    const lat  = parseFloat(ph.latitude);
+    const lon  = parseFloat(ph.longitude);
+    const city = (ph.city||'').toLowerCase();
+
+    // Different colour per city: green=Bangalore, blue=Pune, grey=other
+    const color = city==='bangalore' ? '#2d6a4f'
+                : city==='pune'      ? '#1d4ed8'
+                : '#6b7280';
+    const label = city==='bangalore' ? 'BLR'
+                : city==='pune'      ? 'PNE'
+                : '📍';
+
+    const icon = L.divIcon({
+      html:`<div style="
+        width:36px;height:36px;border-radius:50% 50% 50% 0;
+        background:${color};border:2px solid #fff;
+        display:flex;align-items:center;justify-content:center;
+        transform:rotate(-45deg);
+        box-shadow:0 2px 8px rgba(0,0,0,.3);font-size:8px;font-weight:700;">
+          <span style="transform:rotate(45deg);color:#fff;font-size:7px;letter-spacing:-.5px">${label}</span>
+        </div>`,
+      className:'',
+      iconSize:[36,36],
+      iconAnchor:[18,36],
+      popupAnchor:[0,-38],
+    });
+
+    const stars  = '★'.repeat(Math.round(ph.rating||0))+'☆'.repeat(5-Math.round(ph.rating||0));
+    const open24 = ph.is_open_24h ? '<span class="map-popup-badge">⏰ Open 24×7</span>' : '';
+    const cityBadge = `<span style="font-size:.68rem;padding:2px 8px;border-radius:10px;background:${color}22;color:${color};border:1px solid ${color}44;font-weight:600;display:inline-block;margin-top:.3rem;">${ph.city||''}</span>`;
+
+    const marker = L.marker([lat,lon],{icon})
+      .addTo(_leafletMap)
+      .bindPopup(`
+        <div style="display:flex;align-items:center;gap:.6rem;margin-bottom:.5rem;">
+          ${SVG.pharmacy}
+          <div class="map-popup-name">${ph.name||ph.pharmacy_name}</div>
+        </div>
+        <div class="map-popup-detail">
+          📍 ${ph.address||'—'}<br>
+          🏙 ${ph.area||''}, ${ph.city||''}<br>
+          📞 ${ph.phone||'—'}<br>
+          ⭐ ${stars} ${(ph.rating||0).toFixed(1)}
+        </div>
+        ${cityBadge}${open24}
+      `,{maxWidth:240});
+
+    markers.push(marker);
+  });
+
+  // FitBounds — shows ALL markers from both cities at once
+  const group = L.featureGroup(markers);
+  _leafletMap.fitBounds(group.getBounds().pad(0.15));
+
+  // Legend
+  const legend = L.control({position:'bottomright'});
+  legend.onAdd = ()=>{
+    const div = L.DomUtil.create('div');
+    div.style.cssText = 'background:white;padding:8px 12px;border-radius:8px;font-size:11px;font-family:sans-serif;box-shadow:0 2px 8px rgba(0,0,0,.15);line-height:1.8;';
+    div.innerHTML = `
+      <div style="font-weight:700;margin-bottom:4px;color:#1a3a2a">📍 Cities</div>
+      <div><span style="color:#2d6a4f;font-weight:700">●</span> Bangalore (${valid.filter(p=>(p.city||'').toLowerCase()==='bangalore').length})</div>
+      <div><span style="color:#1d4ed8;font-weight:700">●</span> Pune (${valid.filter(p=>(p.city||'').toLowerCase()==='pune').length})</div>
+    `;
+    return div;
+  };
+  legend.addTo(_leafletMap);
+}
+
+function filterPharmCity(city, btn){
+  document.querySelectorAll('#pharma-filter .filter-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  _pharmCityFilter = city;
+  // Map always shows ALL pharmacies (both cities) — just zooms to filtered city
+  renderMap(_pharmData);
+  if(city && _leafletMap){
+    // Pan to the selected city
+    const cityPharms = _pharmData.filter(p=>(p.city||'').toLowerCase()===city.toLowerCase())
+      .filter(p=>parseFloat(p.latitude)&&parseFloat(p.longitude));
+    if(cityPharms.length){
+      const lats = cityPharms.map(p=>parseFloat(p.latitude));
+      const lons = cityPharms.map(p=>parseFloat(p.longitude));
+      const bounds = L.latLngBounds(cityPharms.map(p=>[parseFloat(p.latitude),parseFloat(p.longitude)]));
+      _leafletMap.fitBounds(bounds.pad(0.2));
+    }
+  }
+  renderPharmacies();
+}
+
+function renderPharmacies(){
+  const list = _pharmCityFilter ? _pharmData.filter(p=>p.city===_pharmCityFilter) : _pharmData;
+  document.getElementById('pharma-body').innerHTML=`
+    <p style="margin-bottom:1rem;color:var(--text3);font-size:.85rem">Showing ${list.length} of ${_pharmData.length} pharmacies from the QuadTree.</p>
+    <div class="pharma-grid">
+      ${list.map(ph=>{
+        const stars = '★'.repeat(Math.round(ph.rating||0))+'☆'.repeat(5-Math.round(ph.rating||0));
+        return `<div class="pharma-card">
+          <div style="display:flex;align-items:center;gap:.75rem;margin-bottom:.85rem;">
+            <div style="width:48px;height:48px;border-radius:12px;background:linear-gradient(135deg,rgba(26,58,42,.08),rgba(45,106,79,.18));border:1px solid rgba(45,106,79,.15);display:flex;align-items:center;justify-content:center;flex-shrink:0;padding:6px;">
+              ${SVG.pharmacy}
+            </div>
+            <div style="flex:1;min-width:0;">
+              <div class="pharma-card-name" style="margin-bottom:0;">${ph.name||ph.pharmacy_name}</div>
+              ${ph.city?`<span class="city-badge">${ph.city}</span>`:''}
+            </div>
+          </div>
+          <div class="pharma-detail">📍 <strong>${ph.address||'—'}</strong></div>
+          <div class="pharma-detail">🏙 <strong>${ph.area||''}, ${ph.city||''}</strong></div>
+          <div class="pharma-detail">📞 <strong>${ph.phone||'—'}</strong></div>
+          <div class="pharma-detail">🗺 <strong>${ph.latitude?.toFixed(4)||'—'}, ${ph.longitude?.toFixed(4)||'—'}</strong></div>
+          <div class="pharma-rating">
+            <span class="stars">${stars}</span>
+            <span class="rating-num">${(ph.rating||0).toFixed(1)}</span>
+            ${ph.is_open_24h?'<span class="open-badge">24×7</span>':''}
+          </div>
+        </div>`;
+      }).join('')}
+    </div>`;
+}
+
+// =========================================================================
+// ADMIN
+// =========================================================================
+let _pharmacies=[];
+
+async function initAdmin(){
+  if(_pharmacies.length===0){
+    const d = await api('GET','/pharmacies');
+    _pharmacies = d.data?.pharmacies||[];
+  }
+
+  // Sort and group by city
+  _pharmacies.sort((a,b)=>{
+    const ca = a.city||'', cb = b.city||'';
+    if(ca!==cb) return ca.localeCompare(cb);
+    return (a.name||a.pharmacy_name).localeCompare(b.name||b.pharmacy_name);
+  });
+
+  const cities = {};
+  _pharmacies.forEach(p=>{
+    const city = p.city||'Other';
+    if(!cities[city]) cities[city]=[];
+    cities[city].push(p);
+  });
+
+  let opts = '';
+  for(const [city, phs] of Object.entries(cities)){
+    opts += `<optgroup label="📍 ${city}">`;
+    phs.forEach(p=>{
+      opts += `<option value="${p.pharmacy_id}">${p.name||p.pharmacy_name}${p.is_open_24h?' ⏰':''}</option>`;
+    });
+    opts += `</optgroup>`;
+  }
+
+  document.getElementById('a-ph').innerHTML = opts;
+  document.getElementById('v-ph').innerHTML = opts;
+  loadInv();
+}
+
+function markField(id, valid){
+  const el = document.getElementById(id);
+  if(!el) return;
+  el.style.borderColor = valid ? '' : 'var(--red)';
+  el.style.boxShadow   = valid ? '' : '0 0 0 2px rgba(192,57,43,.15)';
+}
+
+async function addInventory(){
+  const med   = document.getElementById('a-med').value.trim();
+  const cat   = document.getElementById('a-cat').value;
+  const ph    = document.getElementById('a-ph').value;
+  const qty   = document.getElementById('a-qty').value;
+  const mrp   = document.getElementById('a-mrp').value;
+  const price = document.getElementById('a-price').value;
+  const batch = document.getElementById('a-batch').value.trim();
+  const mfg   = document.getElementById('a-mfg').value;
+  const exp   = document.getElementById('a-exp').value;
+
+  // Validate all fields — highlight red if empty
+  const checks = {
+    'a-med':   !!med,
+    'a-cat':   !!cat,
+    'a-ph':    !!ph,
+    'a-qty':   !!qty && parseInt(qty) > 0,
+    'a-mrp':   !!mrp && parseFloat(mrp) > 0,
+    'a-price': !!price && parseFloat(price) > 0,
+    'a-batch': !!batch,
+    'a-mfg':   !!mfg,
+    'a-exp':   !!exp,
+  };
+
+  let allValid = true;
+  for(const [id, valid] of Object.entries(checks)){
+    markField(id, valid);
+    if(!valid) allValid = false;
+  }
+
+  if(!allValid){
+    showMsg('a-err','Please fill in all required fields (highlighted in red).');
+    return;
+  }
+
+  // Extra check: expiry must be after manufacture
+  if(mfg && exp && new Date(exp) <= new Date(mfg)){
+    markField('a-exp', false);
+    showMsg('a-err','Expiry date must be after manufacture date.');
+    return;
+  }
+
+  // Extra check: expiry must be in the future
+  if(exp && new Date(exp) < new Date()){
+    markField('a-exp', false);
+    showMsg('a-err','Warning: Expiry date is already in the past. Add anyway?');
+    // Allow adding (for testing) — just warn
+  }
+
+  try{
+    const d = await api('POST','/inventory',{
+      medicine_name:med, pharmacy_id:parseInt(ph), quantity:parseInt(qty),
+      mrp:parseFloat(mrp)||0, unit_price:parseFloat(price)||0,
+      batch_number:batch, manufacture_date:mfg, expiry_date:exp, category:cat
+    });
+    if(d.success){
+      showMsg('a-ok'); hideMsg('a-err');
+      toast('Inventory added!','ok');
+      loadStats(); loadInv();
+      ['a-med','a-qty','a-mrp','a-price','a-batch','a-mfg','a-exp'].forEach(id=>{
+        document.getElementById(id).value='';
+        markField(id, true);
+      });
+      document.getElementById('a-cat').value='';
+      document.getElementById('a-price-status').className='price-status-bar';
+      document.getElementById('a-price-status').textContent='💡 Type medicine name & click away to auto-fetch price';
+    }else{
+      showMsg('a-err',d.error||'Failed.');
+    }
+  }catch{showMsg('a-err','Server error.');}
+}
+
+async function addPharmacy(){
+  const name   = document.getElementById('np-name').value.trim();
+  const city   = document.getElementById('np-city').value;
+  const area   = document.getElementById('np-area').value.trim();
+  const addr   = document.getElementById('np-addr').value.trim();
+  const phone  = document.getElementById('np-phone').value.trim();
+  const pin    = document.getElementById('np-pin').value.trim();
+  const lat    = document.getElementById('np-lat').value;
+  const lon    = document.getElementById('np-lon').value;
+  const rating = document.getElementById('np-rating').value;
+
+  const checks = {
+    'np-name':   !!name,
+    'np-city':   !!city,
+    'np-area':   !!area,
+    'np-addr':   !!addr,
+    'np-phone':  !!phone,
+    'np-pin':    !!pin && pin.length >= 5,
+    'np-lat':    !!lat && parseFloat(lat) >= -90  && parseFloat(lat) <= 90,
+    'np-lon':    !!lon && parseFloat(lon) >= -180 && parseFloat(lon) <= 180,
+    'np-rating': !!rating && parseFloat(rating) >= 0 && parseFloat(rating) <= 5,
+  };
+
+  let allValid = true;
+  for(const [id, valid] of Object.entries(checks)){
+    markField(id, valid);
+    if(!valid) allValid = false;
+  }
+
+  if(!allValid){
+    showMsg('np-err','Please fill in all required fields (highlighted in red).');
+    return;
+  }
+
+  try{
+    const open24 = document.getElementById('np-24h').value;
+    const d = await api('POST','/pharmacies',{
+      pharmacy_name:name, city, area,
+      address:addr, phone, pincode:pin,
+      latitude:parseFloat(lat), longitude:parseFloat(lon),
+      rating:parseFloat(rating), is_open_24h:parseInt(open24),
+    });
+    if(d.success){
+      showMsg('np-ok');
+      toast('Pharmacy added! Now visible in search results.','ok');
+      _pharmacies=[];
+      await initAdmin();
+      ['np-name','np-area','np-addr','np-phone','np-pin','np-lat','np-lon','np-rating']
+        .forEach(id=>{ document.getElementById(id).value=''; markField(id,true); });
+      document.getElementById('np-city').value='';
+    }else{
+      showMsg('np-err',d.error||'Failed to add pharmacy.');
+    }
+  }catch{showMsg('np-err','Server error.');}
+}
+
+async function loadInv(){
+  const ph = document.getElementById('v-ph')?.value;
+  if(!ph) return;
+  const body = document.getElementById('inv-body');
+  body.innerHTML='<div class="loading"><div class="spinner"></div></div>';
+  try{
+    const d = await api('GET',`/pharmacies/${ph}/inventory`);
+    const items = d.data?.items||[];
+    if(!items.length){
+      body.innerHTML='<div style="padding:1.5rem;text-align:center;color:var(--text3)">No records for this pharmacy.</div>';
+      return;
+    }
+    body.innerHTML=`<div class="inv-table-wrap"><table class="inv">
+      <thead><tr>
+        <th>Medicine</th><th>Batch</th><th>Qty</th>
+        <th>Unit Price</th><th>MRP</th><th>Expiry</th><th>Status</th><th></th>
+      </tr></thead>
+      <tbody>
+        ${items.map(r=>{
+          const s   = r.expiry_status||{};
+          const col = s.level==='EXPIRED'?'var(--red)':s.level==='CRITICAL'?'var(--orange)':s.level==='WARNING'?'var(--amber)':'var(--green-lt)';
+          return `<tr>
+            <td style="font-weight:500">${r.medicine_name}</td>
+            <td style="font-size:.75rem;color:var(--text3)">${r.batch_number||'—'}</td>
+            <td>${r.quantity}</td>
+            <td>₹${(r.unit_price||0).toFixed(2)}</td>
+            <td>₹${(r.mrp||0).toFixed(2)}</td>
+            <td style="font-size:.78rem">${r.expiry_date}</td>
+            <td style="color:${col};font-size:.75rem;font-weight:600">${s.level||'OK'}</td>
+            <td>
+              <button class="btn-edit" onclick="openEdit(${r.inventory_id},${r.quantity},${r.unit_price||0},${r.mrp||0},'${r.expiry_date}','${r.batch_number||''}','${r.medicine_name}')">✏</button>
+              <button class="btn-del" onclick="delInv(${r.inventory_id})">🗑</button>
+            </td>
+          </tr>`;
+        }).join('')}
+      </tbody>
+    </table></div>`;
+  }catch{body.innerHTML='<div style="padding:1rem;color:var(--red)">Failed to load.</div>';}
+}
+
+async function delInv(id){
+  if(!confirm('Delete this record?')) return;
+  try{
+    const d = await api('DELETE',`/inventory/${id}`);
+    if(d.success){toast('Deleted.','info');loadInv();loadStats();}
+    else toast(d.error||'Delete failed.','err');
+  }catch{toast('Server error.','err');}
+}
+
+function openEdit(id, qty, price, mrp, exp, batch, medName){
+  document.getElementById('e-id').value    = id;
+  document.getElementById('e-qty').value   = qty;
+  document.getElementById('e-price').value = price;
+  document.getElementById('e-mrp').value   = mrp;
+  document.getElementById('e-exp').value   = exp;
+  document.getElementById('e-batch').value = batch;
+  document.getElementById('e-med-name').textContent = medName ? `Editing: ${medName}` : '';
+  document.getElementById('edit-modal').style.display='flex';
+}
+function closeEdit(){document.getElementById('edit-modal').style.display='none';}
+
+async function saveEdit(){
+  const id    = document.getElementById('e-id').value;
+  const qty   = document.getElementById('e-qty').value;
+  const price = document.getElementById('e-price').value;
+  const mrp   = document.getElementById('e-mrp').value;
+  const exp   = document.getElementById('e-exp').value;
+  const batch = document.getElementById('e-batch').value;
+  try{
+    const d = await api('PUT',`/inventory/${id}`,{
+      quantity:parseInt(qty), unit_price:parseFloat(price)||0,
+      mrp:parseFloat(mrp)||0, expiry_date:exp, batch_number:batch
+    });
+    if(d.success){toast('Updated!','ok');closeEdit();loadInv();loadStats();}
+    else toast(d.error||'Failed.','err');
+  }catch{toast('Server error.','err');}
+}
+
+// =========================================================================
+// EXPORT FUNCTIONS
+// =========================================================================
+async function exportCSV(){
+  const ph   = document.getElementById('v-ph')?.value;
+  const name = document.getElementById('v-ph')?.options[document.getElementById('v-ph').selectedIndex]?.text || 'pharmacy';
+  const d    = await api('GET',`/pharmacies/${ph}/inventory`);
+  const items = d.data?.items||[];
+  if(!items.length){toast('No data to export','err');return;}
+
+  const headers = ['Medicine','Batch','Quantity','Unit Price (Rs)','MRP (Rs)','Expiry Date','Days Left','Status'];
+  const rows = items.map(r=>[
+    r.medicine_name,
+    r.batch_number||'',
+    r.quantity,
+    (r.unit_price||0).toFixed(2),
+    (r.mrp||0).toFixed(2),
+    r.expiry_date,
+    r.expiry_status?.days??'',
+    r.expiry_status?.level||'OK'
+  ]);
+  const csv = [headers,...rows].map(row=>row.map(v=>`"${v}"`).join(',')).join('\n');
+  const blob = new Blob([csv],{type:'text/csv'});
+  const url  = URL.createObjectURL(blob);
+  const a    = document.createElement('a');
+  a.href=url; a.download=`${name.replace(/[\s\/]+/g,'-')}-inventory.csv`; a.click();
+  toast('CSV exported!','ok');
+}
+
+async function exportExcel(){
+  const ph     = document.getElementById('v-ph')?.value;
+  const phName = document.getElementById('v-ph')?.options[document.getElementById('v-ph').selectedIndex]?.text || 'Pharmacy';
+  const d      = await api('GET',`/pharmacies/${ph}/inventory`);
+  const items  = d.data?.items||[];
+  if(!items.length){toast('No data to export','err');return;}
+
+  const today = new Date().toLocaleDateString('en-IN');
+  let html = `<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:x="urn:schemas-microsoft-com:office:excel">
+<head><meta charset="UTF-8">
+<style>
+  body{font-family:Calibri;}
+  h2{color:#1a3a2a;}
+  table{border-collapse:collapse;width:100%;}
+  th{background:#1a3a2a;color:white;padding:8px 12px;text-align:left;}
+  td{padding:6px 12px;border-bottom:1px solid #e0e0e0;}
+  tr:nth-child(even) td{background:#f5f5f0;}
+  .ok{color:#166534;font-weight:600;}
+  .warning{color:#92400e;font-weight:600;}
+  .critical,.expired{color:#991b1b;font-weight:600;}
+</style>
+</head><body>
+<h2>SmartRx — ${phName} Inventory Report</h2>
+<p>Generated: ${today} &nbsp;|&nbsp; Total: ${items.length} records</p>
+<table><thead><tr>
+  <th>Medicine</th><th>Batch</th><th>Qty</th>
+  <th>Unit Price (Rs)</th><th>MRP (Rs)</th>
+  <th>Expiry Date</th><th>Days Left</th><th>Status</th>
+</tr></thead><tbody>`;
+
+  items.forEach(r=>{
+    const lv = (r.expiry_status?.level||'OK').toLowerCase();
+    html+=`<tr>
+      <td><strong>${r.medicine_name}</strong></td>
+      <td>${r.batch_number||'—'}</td>
+      <td>${r.quantity}</td>
+      <td>Rs ${(r.unit_price||0).toFixed(2)}</td>
+      <td>Rs ${(r.mrp||0).toFixed(2)}</td>
+      <td>${r.expiry_date}</td>
+      <td>${r.expiry_status?.days??''}</td>
+      <td class="${lv}">${r.expiry_status?.level||'OK'}</td>
+    </tr>`;
+  });
+
+  html+=`</tbody></table></body></html>`;
+  const blob = new Blob([html],{type:'application/vnd.ms-excel'});
+  const url  = URL.createObjectURL(blob);
+  const a    = document.createElement('a');
+  a.href=url; a.download=`${phName.replace(/[\s\/]+/g,'-')}-inventory.xls`; a.click();
+  toast('Excel exported!','ok');
+}
+
+// =========================================================================
+// =========================================================================
+// AUTHENTICATION — backed by SQLite via Flask API
+// =========================================================================
+let currentUser  = null;
+let loginRole    = 'user';
+
+function switchAuthMode(mode){
+  const isLogin = mode === 'login';
+  document.getElementById('auth-login-form').style.display    = isLogin ? 'block' : 'none';
+  document.getElementById('auth-register-form').style.display = isLogin ? 'none'  : 'block';
+  document.getElementById('login-hint-box').style.display     = isLogin ? 'block' : 'none';
+  document.getElementById('login-err').style.display          = 'none';
+  const tabs = document.querySelectorAll('#auth-mode-tabs .login-tab');
+  tabs[0].classList.toggle('active', isLogin);
+  tabs[1].classList.toggle('active', !isLogin);
+}
+
+function switchLoginTab(role){
+  loginRole = role;
+  document.getElementById('tab-user').classList.toggle('active',  role==='user');
+  document.getElementById('tab-admin').classList.toggle('active', role==='admin');
+  document.getElementById('login-err').style.display = 'none';
+}
+
+function showLoginErr(msg){
+  const el = document.getElementById('login-err');
+  el.textContent = '❌ ' + msg;
+  el.style.display = 'block';
+  const card = document.querySelector('.login-card');
+  card.style.animation='none'; card.offsetHeight;
+  card.style.animation='shake .4s ease';
+}
+
+async function doLogin(){
+  const username = document.getElementById('login-username').value.trim();
+  const password = document.getElementById('login-password').value;
+  if(!username || !password){ showLoginErr('Please enter username and password'); return; }
+  try{
+    const res = await fetch(API+'/login',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({username,password})});
+    const d = await res.json();
+    if(!d.success){ showLoginErr(d.error||'Invalid credentials'); return; }
+    if(loginRole==='admin' && d.data.role!=='admin'){ showLoginErr('This account does not have admin privileges'); return; }
+    currentUser = d.data;
+    sessionStorage.setItem('smartrx-user', JSON.stringify(currentUser));
+    document.getElementById('login-overlay').classList.add('hidden');
+    applyRole(currentUser.role, currentUser.full_name);
+    toast('👋 Welcome, '+currentUser.full_name+'!', 'ok');
+    loadStats();
+  }catch(e){
+    const FALLBACK = {
+      user:  {password:'user123',      role:'user',  full_name:'Demo User', age:25, city:'Pune'},
+      admin: {password:'admin@smartrx',role:'admin', full_name:'Admin',     age:30, city:'Pune'},
+    };
+    const cred = FALLBACK[username];
+    if(cred && cred.password===password){
+      if(loginRole==='admin' && cred.role!=='admin'){ showLoginErr('Admin credentials required'); return; }
+      currentUser = {username,...cred};
+      sessionStorage.setItem('smartrx-user', JSON.stringify(currentUser));
+      document.getElementById('login-overlay').classList.add('hidden');
+      applyRole(currentUser.role, currentUser.full_name);
+      toast('👋 Welcome, '+currentUser.full_name+'!', 'ok');
+      loadStats();
+    } else { showLoginErr('Invalid username or password'); }
+  }
+}
+
+async function doRegister(){
+  const full_name=document.getElementById('reg-name').value.trim();
+  const username=document.getElementById('reg-username').value.trim();
+  const email=document.getElementById('reg-email').value.trim();
+  const phone=document.getElementById('reg-phone').value.trim();
+  const age=document.getElementById('reg-age').value;
+  const gender=document.getElementById('reg-gender').value;
+  const city=document.getElementById('reg-city').value;
+  const password=document.getElementById('reg-password').value;
+  const confirm=document.getElementById('reg-confirm').value;
+  if(!full_name||!username||!email||!age||!city||!password){showLoginErr('Please fill all required fields (*)');return;}
+  if(password!==confirm){showLoginErr('Passwords do not match');return;}
+  if(password.length<6){showLoginErr('Password must be at least 6 characters');return;}
+  if(parseInt(age)<1||parseInt(age)>120){showLoginErr('Enter a valid age');return;}
+  try{
+    const res=await fetch(API+'/register',{method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({full_name,username,email,phone,age:parseInt(age),gender,city,password})});
+    const d=await res.json();
+    if(!d.success){showLoginErr(d.error||'Registration failed');return;}
+    currentUser=d.data;
+    sessionStorage.setItem('smartrx-user',JSON.stringify(currentUser));
+    document.getElementById('login-overlay').classList.add('hidden');
+    applyRole('user',currentUser.full_name);
+    toast('🎉 Account created! Welcome, '+currentUser.full_name+'!','ok');
+    loadStats();
+  }catch(e){showLoginErr('Could not connect to server. Is Flask running?');}
+}
+
+function applyRole(role,name=''){
+  if(role==='admin'){
+    document.body.classList.add('is-admin');
+    document.getElementById('role-badge').className='role-badge admin';
+    document.getElementById('role-icon').textContent='🔐';
+    document.getElementById('role-name').textContent=name||'Admin';
+  }else{
+    document.body.classList.remove('is-admin');
+    document.getElementById('role-badge').className='role-badge user';
+    document.getElementById('role-icon').textContent='👤';
+    document.getElementById('role-name').textContent=name||'User';
+  }
+}
+
+function doLogout(){
+  if(!confirm('Logout from SmartRx?')) return;
+  currentUser=null;
+  sessionStorage.removeItem('smartrx-user');
+  document.body.classList.remove('is-admin');
+  document.getElementById('login-overlay').classList.remove('hidden');
+  document.getElementById('login-username').value='';
+  document.getElementById('login-password').value='';
+  document.getElementById('login-err').style.display='none';
+  switchAuthMode('login');
+  switchLoginTab('user');
+  showView('search',document.querySelector('.nav-tab'));
+}
+
+function guardAdmin(viewName){
+  if(['admin','analytics'].includes(viewName)&&currentUser?.role!=='admin'){
+    toast('⛔ Admin access only. Please login as Admin.','err');
+    return true;
+  }
+  return false;
+}
+
+async function checkAgeRestriction(medicineName){
+  if(!currentUser) return {allowed:true};
+  const userAge=currentUser.age||999;
+  try{
+    const res=await fetch(API+'/age_check',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({age:userAge,medicine_name:medicineName})});
+    return await res.json();
+  }catch(e){return {allowed:true};}
+}
+
+// MULTILINGUAL SUPPORT
+// =========================================================================
+const LANG = {
+  en:{
+    nav_search:'Search', nav_alerts:'Alerts', nav_pharmacies:'Pharmacies',
+    nav_admin:'Admin', nav_ai:'AI Dashboard',
+    hero_eyebrow:'Data Structures in Action',
+    hero_h1_1:'Find Any Medicine,', hero_h1_em:'Anywhere.',
+    hero_p:'Real-time autocomplete powered by a Trie. Inventory lookup via a B+ Tree. Nearby pharmacies via QuadTree. Expiry alerts via Min-Heap.',
+    search_title:'Search Medicines',
+    search_placeholder:'Type medicine name…',
+    search_btn:'Search',
+    detect_btn:'Detect',
+    stats_medicines:'MEDICINES (TRIE)',
+    stats_inventory:'INVENTORY (B+ TREE)',
+    stats_pharmacies:'PHARMACIES (QUADTREE)',
+    stats_expiring:'EXPIRING <7D',
+    stats_low:'LOW STOCK (≤10)',
+    alerts_eyebrow:'Min-Heap Priority Queue',
+    alerts_title:'Expiry Alerts',
+    pharma_eyebrow:'QuadTree Spatial Index',
+    pharma_title:'All Pharmacies',
+    admin_eyebrow:'Pharmacy Owner Panel',
+    admin_title:'Admin Panel',
+    add_inventory:'➕ Add Inventory Record',
+    add_pharmacy:'🏥 Add New Pharmacy',
+    all_mandatory:'* All fields are mandatory',
+    submit_btn:'Add to Inventory',
+    add_pharm_btn:'Add Pharmacy',
+  },
+  hi:{
+    nav_search:'खोजें', nav_alerts:'अलर्ट', nav_pharmacies:'फार्मेसी',
+    nav_admin:'व्यवस्थापन', nav_ai:'AI डैशबोर्ड',
+    hero_eyebrow:'डेटा स्ट्रक्चर्स इन एक्शन',
+    hero_h1_1:'कोई भी दवा खोजें,', hero_h1_em:'कहीं भी।',
+    hero_p:'Trie द्वारा रियल-टाइम ऑटोकम्पलीट। B+ Tree द्वारा इन्वेंटरी। QuadTree द्वारा नज़दीकी फार्मेसी। Min-Heap द्वारा एक्सपायरी अलर्ट।',
+    search_title:'दवाएं खोजें',
+    search_placeholder:'दवा का नाम टाइप करें…',
+    search_btn:'खोजें',
+    detect_btn:'स्थान पहचानें',
+    stats_medicines:'दवाएं (TRIE)',
+    stats_inventory:'इन्वेंटरी (B+ TREE)',
+    stats_pharmacies:'फार्मेसी (QUADTREE)',
+    stats_expiring:'7 दिन में समाप्त',
+    stats_low:'कम स्टॉक (≤10)',
+    alerts_eyebrow:'Min-Heap प्राथमिकता कतार',
+    alerts_title:'एक्सपायरी अलर्ट',
+    pharma_eyebrow:'QuadTree स्थानिक सूचकांक',
+    pharma_title:'सभी फार्मेसी',
+    admin_eyebrow:'फार्मेसी मालिक पैनल',
+    admin_title:'एडमिन पैनल',
+    add_inventory:'➕ इन्वेंटरी रिकॉर्ड जोड़ें',
+    add_pharmacy:'🏥 नई फार्मेसी जोड़ें',
+    all_mandatory:'* सभी फ़ील्ड अनिवार्य हैं',
+    submit_btn:'इन्वेंटरी में जोड़ें',
+    add_pharm_btn:'फार्मेसी जोड़ें',
+  },
+  mr:{
+    nav_search:'शोधा', nav_alerts:'सूचना', nav_pharmacies:'फार्मसी',
+    nav_admin:'व्यवस्थापन', nav_ai:'AI डॅशबोर्ड',
+    hero_eyebrow:'डेटा स्ट्रक्चर्स कृतीत',
+    hero_h1_1:'कोणतीही औषधे शोधा,', hero_h1_em:'कुठेही।',
+    hero_p:'Trie द्वारे रिअल-टाइम ऑटोकम्पलीट। B+ Tree द्वारे इन्व्हेंटरी। QuadTree द्वारे जवळच्या फार्मसी। Min-Heap द्वारे कालबाह्यता सूचना।',
+    search_title:'औषधे शोधा',
+    search_placeholder:'औषधाचे नाव टाइप करा…',
+    search_btn:'शोधा',
+    detect_btn:'स्थान शोधा',
+    stats_medicines:'औषधे (TRIE)',
+    stats_inventory:'साठा (B+ TREE)',
+    stats_pharmacies:'फार्मसी (QUADTREE)',
+    stats_expiring:'७ दिवसांत संपणारे',
+    stats_low:'कमी साठा (≤10)',
+    alerts_eyebrow:'Min-Heap प्राधान्य रांग',
+    alerts_title:'कालबाह्यता सूचना',
+    pharma_eyebrow:'QuadTree स्थान निर्देशांक',
+    pharma_title:'सर्व फार्मसी',
+    admin_eyebrow:'फार्मसी मालक पॅनेल',
+    admin_title:'अ‍ॅडमिन पॅनेल',
+    add_inventory:'➕ साठा नोंद जोडा',
+    add_pharmacy:'🏥 नवीन फार्मसी जोडा',
+    all_mandatory:'* सर्व फील्ड अनिवार्य आहेत',
+    submit_btn:'साठ्यात जोडा',
+    add_pharm_btn:'फार्मसी जोडा',
+  },
+  kn:{
+    nav_search:'ಹುಡುಕಿ', nav_alerts:'ಎಚ್ಚರಿಕೆ', nav_pharmacies:'ಫಾರ್ಮಸಿ',
+    nav_admin:'ನಿರ್ವಹಣೆ', nav_ai:'AI ಡ್ಯಾಶ್‌ಬೋರ್ಡ್',
+    hero_eyebrow:'ಡೇಟಾ ಸ್ಟ್ರಕ್ಚರ್ಸ್ ಕ್ರಿಯೆಯಲ್ಲಿ',
+    hero_h1_1:'ಯಾವುದೇ ಔಷಧ ಹುಡುಕಿ,', hero_h1_em:'ಎಲ್ಲಿಯಾದರೂ।',
+    hero_p:'Trie ಮೂಲಕ ರಿಯಲ್-ಟೈಮ್ ಆಟೋಕಂಪ್ಲೀಟ್. B+ Tree ಮೂಲಕ ದಾಸ್ತಾನು. QuadTree ಮೂಲಕ ಹತ್ತಿರದ ಫಾರ್ಮಸಿ. Min-Heap ಮೂಲಕ ಮಿತಿ ಎಚ್ಚರಿಕೆ.',
+    search_title:'ಔಷಧ ಹುಡುಕಿ',
+    search_placeholder:'ಔಷಧದ ಹೆಸರು ಟೈಪ್ ಮಾಡಿ…',
+    search_btn:'ಹುಡುಕಿ',
+    detect_btn:'ಸ್ಥಳ ಪತ್ತೆ',
+    stats_medicines:'ಔಷಧಗಳು (TRIE)',
+    stats_inventory:'ದಾಸ್ತಾನು (B+ TREE)',
+    stats_pharmacies:'ಫಾರ್ಮಸಿ (QUADTREE)',
+    stats_expiring:'7 ದಿನದಲ್ಲಿ ಮುಕ್ತಾಯ',
+    stats_low:'ಕಡಿಮೆ ಸ್ಟಾಕ್ (≤10)',
+    alerts_eyebrow:'Min-Heap ಆದ್ಯತೆ ಸರದಿ',
+    alerts_title:'ಮಿತಿ ಎಚ್ಚರಿಕೆಗಳು',
+    pharma_eyebrow:'QuadTree ಸ್ಥಳ ಸೂಚ್ಯಂಕ',
+    pharma_title:'ಎಲ್ಲಾ ಫಾರ್ಮಸಿಗಳು',
+    admin_eyebrow:'ಫಾರ್ಮಸಿ ಮಾಲೀಕ ಪ್ಯಾನೆಲ್',
+    admin_title:'ಅಡ್ಮಿನ್ ಪ್ಯಾನೆಲ್',
+    add_inventory:'➕ ದಾಸ್ತಾನು ದಾಖಲೆ ಸೇರಿಸಿ',
+    add_pharmacy:'🏥 ಹೊಸ ಫಾರ್ಮಸಿ ಸೇರಿಸಿ',
+    all_mandatory:'* ಎಲ್ಲಾ ಕ್ಷೇತ್ರಗಳು ಕಡ್ಡಾಯ',
+    submit_btn:'ದಾಸ್ತಾನಿಗೆ ಸೇರಿಸಿ',
+    add_pharm_btn:'ಫಾರ್ಮಸಿ ಸೇರಿಸಿ',
+  },
+};
+
+let currentLang = localStorage.getItem('smartrx-lang') || 'en';
+
+function tr(key){ return (LANG[currentLang]||LANG.en)[key] || (LANG.en[key] || key); }
+
+function setLang(lang, btn){
+  currentLang = lang;
+  localStorage.setItem('smartrx-lang', lang);
+  document.querySelectorAll('.lang-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  applyLang();
+}
+
+function applyLang(){
+  document.querySelectorAll('[data-i18n]').forEach(el=>{
+    el.textContent = tr(el.getAttribute('data-i18n'));
+  });
+  document.querySelectorAll('[data-i18n-ph]').forEach(el=>{
+    el.placeholder = tr(el.getAttribute('data-i18n-ph'));
+  });
+}
+
+// =========================================================================
+// DARK MODE
+// =========================================================================
+function toggleTheme(){
+  const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+  const newTheme = isDark ? 'light' : 'dark';
+  document.documentElement.setAttribute('data-theme', newTheme);
+  localStorage.setItem('smartrx-theme', newTheme);
+  document.getElementById('theme-btn').textContent = newTheme === 'dark' ? '☀️' : '🌙';
+  // Also sync to expiry dashboard if open
+  try{ localStorage.setItem('smartrx-theme', newTheme); }catch(e){}
+}
+
+function initTheme(){
+  const saved = localStorage.getItem('smartrx-theme') || 'light';
+  document.documentElement.setAttribute('data-theme', saved);
+  const btn = document.getElementById('theme-btn');
+  if(btn) btn.textContent = saved === 'dark' ? '☀️' : '🌙';
+}
+
+function initLang(){
+  const saved = localStorage.getItem('smartrx-lang') || 'en';
+  currentLang = saved;
+  document.querySelectorAll('.lang-btn').forEach(b=>{
+    if(b.getAttribute('onclick')?.includes(`'${saved}'`)) b.classList.add('active');
+    else b.classList.remove('active');
+  });
+  applyLang();
+}
+
+// =========================================================================
+// API HELPER
+// =========================================================================
+async function api(method, path, body=null){
+  const opts={method,headers:{'Content-Type':'application/json'}};
+  if(body) opts.body=JSON.stringify(body);
+  const res = await fetch(API+path,opts);
+  if(!res.ok && res.status!==400 && res.status!==404) throw new Error(res.status);
+  return res.json();
+}
+
+// =========================================================================
+// UI UTILS
+// =========================================================================
+function toast(msg, type='info'){
+  const c=document.getElementById('toasts');
+  const t=document.createElement('div');
+  t.className=`toast ${type}`;
+  const icon={ok:'✅',err:'❌',info:'ℹ️'}[type]||'•';
+  t.innerHTML=`${icon} ${msg}`;
+  c.appendChild(t);
+  setTimeout(()=>{t.style.opacity='0';t.style.transition='opacity .3s';setTimeout(()=>t.remove(),300);},3000);
+}
+function showMsg(id,msg=''){
+  const el=document.getElementById(id);
+  if(msg) el.textContent=msg;
+  el.style.display='block';
+  setTimeout(()=>el.style.display='none',4000);
+}
+function hideMsg(id){document.getElementById(id).style.display='none';}
+
+// =========================================================================
+// ANALYTICS — Charts powered by Chart.js + SmartRx API
+// =========================================================================
+let _charts = {};   // store chart instances to destroy on reload
+
+function destroyCharts(){
+  Object.values(_charts).forEach(c=>{ try{ c.destroy(); }catch(e){} });
+  _charts = {};
+}
+
+function chartColors(n){
+  const palette = [
+    '#2d6a4f','#40916c','#52b788','#74c99a','#95d5b2',
+    '#d4830a','#d46113','#c0392b','#1d4ed8','#7c3aed',
+    '#0891b2','#059669','#dc2626','#9333ea','#ea580c'
+  ];
+  return Array.from({length:n},(_,i)=>palette[i%palette.length]);
+}
+
+async function loadAnalytics(){
+  destroyCharts();
+
+  // Fill DSA stat cards from dashboard API
+  try{
+    const d = await api('GET','/dashboard');
+    const stats = d.data || {};
+    document.getElementById('an-trie'  ).textContent = stats.ds?.trie_medicines    ?? stats.total_medicines   ?? '—';
+    document.getElementById('an-bptree').textContent = stats.ds?.bptree_records    ?? stats.total_inventory   ?? '—';
+    document.getElementById('an-quad'  ).textContent = stats.ds?.quadtree_pharmacies ?? stats.total_pharmacies ?? '—';
+    document.getElementById('an-heap'  ).textContent = stats.expiring_30d           ?? stats.expiring_soon    ?? '—';
+    document.getElementById('an-low'   ).textContent = stats.low_stock              ?? '—';
+  }catch(e){ console.warn('dashboard stats failed',e); }
+
+  // Fetch all data we need
+  try{
+    const [invRes, phRes, alertRes] = await Promise.all([
+      fetch(API+'/inventory').then(r=>r.json()),
+      fetch(API+'/pharmacies').then(r=>r.json()),
+      fetch(API+'/alerts?days=365').then(r=>r.json()),
+    ]);
+
+    const inventory  = invRes.data?.items    || invRes.data?.inventory || [];
+    const pharmacies = phRes.data?.pharmacies || [];
+    const alerts     = alertRes.data?.alerts  || [];
+
+    buildCategoryChart(inventory);
+    buildCityChart(pharmacies, inventory);
+    buildExpiryChart(alerts);
+    buildTopMedsChart(inventory);
+
+  }catch(e){
+    // Fallback — fetch predictions API which has rich data
+    try{
+      const pred = await fetch('http://127.0.0.1:5000/api/v1/predict_expiry').then(r=>r.json());
+      const predictions = pred.data?.predictions || [];
+      buildCategoryChartFromPred(predictions);
+      buildCityChartFromPred(predictions);
+      buildExpiryChartFromPred(pred.data?.summary || {});
+      buildTopMedsChartFromPred(predictions);
+    }catch(e2){ console.error('Analytics load failed',e2); }
+  }
+}
+
+// ── Chart 1: Stock by Category (Bar) ──────────────────────
+function buildCategoryChart(inventory){
+  const catMap = {};
+  inventory.forEach(i=>{
+    const cat = i.category || 'General';
+    catMap[cat] = (catMap[cat]||0) + (parseInt(i.quantity)||0);
+  });
+  const sorted = Object.entries(catMap).sort((a,b)=>b[1]-a[1]).slice(0,10);
+  const labels = sorted.map(e=>e[0]);
+  const data   = sorted.map(e=>e[1]);
+  renderBarChart('chart-category', labels, data, 'Total Units in Stock');
+}
+function buildCategoryChartFromPred(pred){
+  const catMap = {};
+  pred.forEach(p=>{ catMap[p.category]=(catMap[p.category]||0)+p.quantity; });
+  const sorted = Object.entries(catMap).sort((a,b)=>b[1]-a[1]).slice(0,10);
+  renderBarChart('chart-category', sorted.map(e=>e[0]), sorted.map(e=>e[1]), 'Total Units in Stock');
+}
+function renderBarChart(id, labels, data, label){
+  const ctx = document.getElementById(id);
+  if(!ctx) return;
+  const isDark = document.documentElement.getAttribute('data-theme')==='dark';
+  const textColor = isDark ? '#b0c8b8' : '#4a4a4a';
+  _charts[id] = new Chart(ctx, {
+    type:'bar',
+    data:{
+      labels,
+      datasets:[{ label, data, backgroundColor:chartColors(data.length), borderRadius:6, borderSkipped:false }]
+    },
+    options:{
+      responsive:true, maintainAspectRatio:false,
+      plugins:{ legend:{display:false} },
+      scales:{
+        x:{ ticks:{color:textColor,font:{size:10}}, grid:{display:false} },
+        y:{ ticks:{color:textColor,font:{size:10}}, grid:{color:isDark?'rgba(255,255,255,.05)':'rgba(0,0,0,.05)'} }
+      }
+    }
+  });
+}
+
+// ── Chart 2: Pune vs Bangalore (Doughnut) ─────────────────
+function buildCityChart(pharmacies, inventory){
+  const cities = {};
+  pharmacies.forEach(p=>{ cities[p.city]=(cities[p.city]||0)+1; });
+  // Also show inventory count per city via join
+  const phCityMap = {};
+  pharmacies.forEach(p=>phCityMap[p.pharmacy_id]=p.city);
+  const invCity = {};
+  inventory.forEach(i=>{
+    const city = phCityMap[i.pharmacy_id] || 'Other';
+    invCity[city] = (invCity[city]||0) + (parseInt(i.quantity)||0);
+  });
+  renderCityChart(cities, invCity);
+}
+function buildCityChartFromPred(pred){
+  const cities={}, invCity={};
+  pred.forEach(p=>{
+    // pharmacy_name often has city hints — group by pharmacy_id prefix
+    const city = p.pharmacy_name?.includes('Pune') || parseInt(p.pharmacy_id)>=17 ? 'Pune' : 'Bangalore';
+    cities[city]=(cities[city]||0)+1;
+    invCity[city]=(invCity[city]||0)+p.quantity;
+  });
+  renderCityChart(cities, invCity);
+}
+function renderCityChart(cities, invCity){
+  const ctx = document.getElementById('chart-city');
+  if(!ctx) return;
+  const isDark = document.documentElement.getAttribute('data-theme')==='dark';
+  const labels  = Object.keys(invCity);
+  const data    = labels.map(c=>invCity[c]||0);
+  _charts['chart-city'] = new Chart(ctx,{
+    type:'doughnut',
+    data:{
+      labels,
+      datasets:[{ data, backgroundColor:['#2d6a4f','#1d4ed8','#d4830a'], borderWidth:2,
+        borderColor: isDark?'#1c2b1e':'#fff', hoverOffset:6 }]
+    },
+    options:{
+      responsive:true, maintainAspectRatio:false,
+      plugins:{
+        legend:{ position:'bottom', labels:{color:isDark?'#b0c8b8':'#4a4a4a',font:{size:11},padding:12} },
+        tooltip:{ callbacks:{ label: ctx=> ` ${ctx.label}: ${ctx.parsed.toLocaleString('en-IN')} units` } }
+      }
+    }
+  });
+}
+
+// ── Chart 3: Expiry Risk (Doughnut) ───────────────────────
+function buildExpiryChart(alerts){
+  const today = new Date();
+  let expired=0, critical=0, warning=0, safe=0;
+  alerts.forEach(a=>{
+    const d = (new Date(a.expiry_date)-today)/(1000*60*60*24);
+    if(d<=0)  expired++;
+    else if(d<=7)  critical++;
+    else if(d<=30) warning++;
+    else safe++;
+  });
+  renderExpiryChart({expired,critical,warning,safe});
+}
+function buildExpiryChartFromPred(summary){
+  renderExpiryChart({
+    expired: summary.critical||0,
+    critical: summary.high||0,
+    warning: summary.medium||0,
+    safe: (summary.safe||0)+(summary.low||0)
+  });
+}
+function renderExpiryChart(d){
+  const ctx = document.getElementById('chart-expiry');
+  if(!ctx) return;
+  const isDark = document.documentElement.getAttribute('data-theme')==='dark';
+  _charts['chart-expiry'] = new Chart(ctx,{
+    type:'doughnut',
+    data:{
+      labels:['Expired','Critical (≤7d)','Warning (≤30d)','Safe'],
+      datasets:[{
+        data:[d.expired,d.critical,d.warning,d.safe],
+        backgroundColor:['#c0392b','#d46113','#d4830a','#52b788'],
+        borderWidth:2, borderColor:isDark?'#1c2b1e':'#fff', hoverOffset:6
+      }]
+    },
+    options:{
+      responsive:true, maintainAspectRatio:false,
+      plugins:{
+        legend:{ position:'bottom', labels:{color:isDark?'#b0c8b8':'#4a4a4a',font:{size:11},padding:10} },
+      }
+    }
+  });
+}
+
+// ── Chart 4: Top Medicines (Horizontal Bar) ────────────────
+function buildTopMedsChart(inventory){
+  const medMap={};
+  inventory.forEach(i=>{ medMap[i.medicine_name]=(medMap[i.medicine_name]||0)+(parseInt(i.quantity)||0); });
+  const sorted = Object.entries(medMap).sort((a,b)=>b[1]-a[1]).slice(0,8);
+  renderTopMedsChart(sorted.map(e=>e[0]), sorted.map(e=>e[1]));
+}
+function buildTopMedsChartFromPred(pred){
+  const medMap={};
+  pred.forEach(p=>{ medMap[p.medicine_name]=(medMap[p.medicine_name]||0)+p.quantity; });
+  const sorted = Object.entries(medMap).sort((a,b)=>b[1]-a[1]).slice(0,8);
+  renderTopMedsChart(sorted.map(e=>e[0]), sorted.map(e=>e[1]));
+}
+function renderTopMedsChart(labels, data){
+  const ctx = document.getElementById('chart-topmeds');
+  if(!ctx) return;
+  const isDark = document.documentElement.getAttribute('data-theme')==='dark';
+  const textColor = isDark ? '#b0c8b8' : '#4a4a4a';
+  _charts['chart-topmeds'] = new Chart(ctx,{
+    type:'bar',
+    data:{
+      labels,
+      datasets:[{ label:'Total Units', data, backgroundColor:chartColors(data.length), borderRadius:5, borderSkipped:false }]
+    },
+    options:{
+      indexAxis:'y', responsive:true, maintainAspectRatio:false,
+      plugins:{ legend:{display:false} },
+      scales:{
+        x:{ ticks:{color:textColor,font:{size:10}}, grid:{color:isDark?'rgba(255,255,255,.05)':'rgba(0,0,0,.05)'} },
+        y:{ ticks:{color:textColor,font:{size:10},callback:v=>v.length>18?v.slice(0,16)+'…':v}, grid:{display:false} }
+      }
+    }
+  });
+}
+
+// =========================================================================
+// PDF REPORT GENERATOR
+// =========================================================================
+async function generatePDF(){
+  const btn = document.getElementById('pdf-btn');
+  btn.textContent = '⏳ Generating…';
+  btn.disabled = true;
+
+  try{
+    // Fetch all data
+    const [dashRes, phRes, alertRes] = await Promise.all([
+      fetch(API+'/dashboard').then(r=>r.json()),
+      fetch(API+'/pharmacies').then(r=>r.json()),
+      fetch(API+'/alerts?days=30').then(r=>r.json()),
+    ]);
+
+    const stats  = dashRes.data || {};
+    const pharmas= phRes.data?.pharmacies || [];
+    const alerts = alertRes.data?.alerts || [];
+    const today  = new Date().toLocaleDateString('en-IN',{day:'2-digit',month:'long',year:'numeric'});
+
+    // Expiry breakdown
+    const now = new Date();
+    let expired=0, critical=0, warning=0;
+    alerts.forEach(a=>{
+      const d=(new Date(a.expiry_date)-now)/(86400000);
+      if(d<=0) expired++; else if(d<=7) critical++; else warning++;
+    });
+
+    const punePh  = pharmas.filter(p=>p.city==='Pune').length;
+    const blrPh   = pharmas.filter(p=>p.city==='Bangalore').length;
+
+    const alertRows = alerts.slice(0,20).map(a=>{
+      const d = Math.round((new Date(a.expiry_date)-now)/86400000);
+      const status = d<=0?'EXPIRED':d<=7?'CRITICAL':d<=30?'WARNING':'OK';
+      const color  = d<=0?'#c0392b':d<=7?'#d46113':d<=30?'#d4830a':'#2d6a4f';
+      return `<tr>
+        <td>${a.medicine_name||'—'}</td>
+        <td>${a.pharmacy_name||'—'}</td>
+        <td>${a.quantity||'—'}</td>
+        <td>${a.expiry_date||'—'}</td>
+        <td style="color:${color};font-weight:700">${status}</td>
+      </tr>`;
+    }).join('');
+
+    const html = `<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8"/>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Geist:wght@400;600;700&display=swap');
+  *{margin:0;padding:0;box-sizing:border-box;}
+  body{font-family:'Geist',Arial,sans-serif;color:#1c1c1c;background:#fff;font-size:13px;}
+  .page{max-width:900px;margin:0 auto;padding:40px;}
+
+  /* Header */
+  .report-header{display:flex;align-items:flex-start;justify-content:space-between;
+    padding-bottom:20px;border-bottom:3px solid #2d6a4f;margin-bottom:28px;}
+  .logo-text{font-size:26px;font-weight:700;color:#1a3a2a;}
+  .logo-dot{display:inline-block;width:10px;height:10px;border-radius:50%;
+    background:#52b788;margin-right:6px;vertical-align:middle;}
+  .report-meta{text-align:right;color:#7a7a7a;font-size:11px;line-height:1.8;}
+  .report-title{font-size:13px;font-weight:600;color:#2d6a4f;margin-top:4px;}
+
+  /* Section */
+  .section{margin-bottom:28px;}
+  .section-title{font-size:14px;font-weight:700;color:#1a3a2a;
+    border-left:4px solid #52b788;padding-left:10px;margin-bottom:14px;}
+  .dsa-tag{display:inline-block;font-size:10px;font-weight:700;
+    padding:2px 8px;border-radius:4px;margin-left:8px;vertical-align:middle;}
+
+  /* KPI grid */
+  .kpi-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:12px;}
+  .kpi{background:#f4f1eb;border-radius:10px;padding:14px 12px;text-align:center;border-top:3px solid #2d6a4f;}
+  .kpi.amber{border-top-color:#d4830a;}
+  .kpi.red{border-top-color:#c0392b;}
+  .kpi.blue{border-top-color:#1d4ed8;}
+  .kpi-val{font-size:22px;font-weight:700;color:#1a3a2a;line-height:1;}
+  .kpi-val.amber{color:#d4830a;}
+  .kpi-val.red{color:#c0392b;}
+  .kpi-lbl{font-size:9px;color:#7a7a7a;text-transform:uppercase;letter-spacing:.06em;margin-top:4px;}
+  .kpi-ds{font-size:9px;font-weight:700;color:#40916c;margin-top:2px;}
+
+  /* City comparison */
+  .city-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
+  .city-card{background:#f4f1eb;border-radius:10px;padding:16px;}
+  .city-name{font-weight:700;font-size:13px;color:#1a3a2a;margin-bottom:8px;}
+  .city-stat{display:flex;justify-content:space-between;font-size:12px;
+    padding:4px 0;border-bottom:1px solid #e8e3d9;color:#4a4a4a;}
+  .city-stat:last-child{border-bottom:none;}
+
+  /* Table */
+  table{width:100%;border-collapse:collapse;font-size:12px;}
+  th{background:#1a3a2a;color:#fff;padding:9px 10px;text-align:left;font-size:11px;font-weight:600;}
+  td{padding:8px 10px;border-bottom:1px solid #e8e3d9;color:#4a4a4a;}
+  tr:nth-child(even) td{background:#fafaf8;}
+
+  /* DSA section */
+  .ds-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+  .ds-card{border:1px solid #d4cfc5;border-radius:10px;padding:14px;border-left:4px solid #52b788;}
+  .ds-card.bpt{border-left-color:#2d6a4f;}
+  .ds-card.quad{border-left-color:#1d4ed8;}
+  .ds-card.heap{border-left-color:#d4830a;}
+  .ds-card.trie{border-left-color:#52b788;}
+  .ds-name{font-weight:700;font-size:12px;color:#1a3a2a;margin-bottom:4px;}
+  .ds-desc{font-size:11px;color:#7a7a7a;line-height:1.5;}
+  .ds-perf{font-size:10px;font-weight:700;color:#40916c;margin-top:6px;}
+
+  /* Footer */
+  .footer{margin-top:32px;padding-top:16px;border-top:1px solid #d4cfc5;
+    display:flex;justify-content:space-between;font-size:10px;color:#7a7a7a;}
+</style>
+</head>
+<body>
+<div class="page">
+
+  <!-- Header -->
+  <div class="report-header">
+    <div>
+      <div class="logo-text"><span class="logo-dot"></span>SmartRx</div>
+      <div style="color:#7a7a7a;font-size:11px;margin-top:4px;">Smart Pharmacy Inventory System v2.0</div>
+      <div style="font-size:10px;color:#40916c;font-weight:600;margin-top:2px;">
+        Trie · B+ Tree · QuadTree · Min-Heap
+      </div>
+    </div>
+    <div class="report-meta">
+      <div class="report-title">📊 INVENTORY & ANALYTICS REPORT</div>
+      <div>Generated: ${today}</div>
+      <div>Time: ${new Date().toLocaleTimeString('en-IN')}</div>
+      <div>By: SmartRx Analytics Engine</div>
+    </div>
+  </div>
+
+  <!-- KPI Summary -->
+  <div class="section">
+    <div class="section-title">System Overview <span class="dsa-tag" style="background:#e8f5ee;color:#2d6a4f;">All 4 DSAs Active</span></div>
+    <div class="kpi-grid">
+      <div class="kpi">
+        <div class="kpi-val">${stats.ds?.trie_medicines ?? stats.total_medicines ?? '—'}</div>
+        <div class="kpi-lbl">Medicines</div>
+        <div class="kpi-ds">🔤 Trie</div>
+      </div>
+      <div class="kpi">
+        <div class="kpi-val">${stats.ds?.bptree_records ?? stats.total_inventory ?? '—'}</div>
+        <div class="kpi-lbl">Inventory Records</div>
+        <div class="kpi-ds">🌳 B+ Tree</div>
+      </div>
+      <div class="kpi blue">
+        <div class="kpi-val" style="color:#1d4ed8">${stats.ds?.quadtree_pharmacies ?? stats.total_pharmacies ?? '—'}</div>
+        <div class="kpi-lbl">Pharmacies</div>
+        <div class="kpi-ds" style="color:#1d4ed8">⛁ QuadTree</div>
+      </div>
+      <div class="kpi amber">
+        <div class="kpi-val amber">${critical + expired}</div>
+        <div class="kpi-lbl">Expiry Alerts</div>
+        <div class="kpi-ds" style="color:#d4830a">⊕ Min-Heap</div>
+      </div>
+      <div class="kpi red">
+        <div class="kpi-val red">${stats.low_stock ?? '—'}</div>
+        <div class="kpi-lbl">Low Stock</div>
+        <div class="kpi-ds" style="color:#c0392b">⚠ Risk</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- City Comparison -->
+  <div class="section">
+    <div class="section-title">City Comparison <span class="dsa-tag" style="background:#eff6ff;color:#1d4ed8;">⛁ QuadTree Spatial Index</span></div>
+    <div class="city-grid">
+      <div class="city-card">
+        <div class="city-name">🏙 Bangalore</div>
+        <div class="city-stat"><span>Pharmacies</span><strong>${blrPh}</strong></div>
+        <div class="city-stat"><span>Coverage</span><strong>~730 km from Pune</strong></div>
+        <div class="city-stat"><span>Status</span><strong style="color:#2d6a4f">Active</strong></div>
+      </div>
+      <div class="city-card">
+        <div class="city-name">🏙 Pune</div>
+        <div class="city-stat"><span>Pharmacies</span><strong>${punePh}</strong></div>
+        <div class="city-stat"><span>Coverage</span><strong>20 km radius</strong></div>
+        <div class="city-stat"><span>Status</span><strong style="color:#2d6a4f">Active</strong></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Expiry Alerts Table -->
+  <div class="section">
+    <div class="section-title">Expiry Alert Summary <span class="dsa-tag" style="background:#fffbeb;color:#d4830a;">⊕ Min-Heap Priority Queue</span></div>
+    <div style="display:flex;gap:12px;margin-bottom:14px;">
+      <div style="background:#fef2f2;padding:10px 16px;border-radius:8px;text-align:center;flex:1">
+        <div style="font-size:20px;font-weight:700;color:#c0392b">${expired}</div>
+        <div style="font-size:10px;color:#7a7a7a;text-transform:uppercase">Expired</div>
+      </div>
+      <div style="background:#fff7ed;padding:10px 16px;border-radius:8px;text-align:center;flex:1">
+        <div style="font-size:20px;font-weight:700;color:#d46113">${critical}</div>
+        <div style="font-size:10px;color:#7a7a7a;text-transform:uppercase">Critical ≤7d</div>
+      </div>
+      <div style="background:#fffbeb;padding:10px 16px;border-radius:8px;text-align:center;flex:1">
+        <div style="font-size:20px;font-weight:700;color:#d4830a">${warning}</div>
+        <div style="font-size:10px;color:#7a7a7a;text-transform:uppercase">Warning ≤30d</div>
+      </div>
+      <div style="background:#f0fdf4;padding:10px 16px;border-radius:8px;text-align:center;flex:1">
+        <div style="font-size:20px;font-weight:700;color:#2d6a4f">${alerts.length - expired - critical - warning}</div>
+        <div style="font-size:10px;color:#7a7a7a;text-transform:uppercase">Safe</div>
+      </div>
+    </div>
+    <table>
+      <thead><tr><th>Medicine</th><th>Pharmacy</th><th>Qty</th><th>Expiry Date</th><th>Status</th></tr></thead>
+      <tbody>${alertRows || '<tr><td colspan="5" style="text-align:center;color:#7a7a7a">No alerts found</td></tr>'}</tbody>
+    </table>
+  </div>
+
+  <!-- DSA Summary -->
+  <div class="section">
+    <div class="section-title">Data Structures Used</div>
+    <div class="ds-grid">
+      <div class="ds-card trie">
+        <div class="ds-name">🔤 Trie (Prefix Tree)</div>
+        <div class="ds-desc">Used for real-time autocomplete in medicine search. Each node represents a character, enabling O(m) lookup where m = prefix length.</div>
+        <div class="ds-perf">Time: O(m) · Space: O(ALPHABET × N)</div>
+      </div>
+      <div class="ds-card bpt">
+        <div class="ds-name">🌳 B+ Tree</div>
+        <div class="ds-desc">Stores inventory records with O(log n) insert, delete, and range queries. All data in leaf nodes enables efficient sequential access.</div>
+        <div class="ds-perf">Time: O(log n) · Range: O(log n + k)</div>
+      </div>
+      <div class="ds-card quad">
+        <div class="ds-name">⛁ QuadTree</div>
+        <div class="ds-desc">2D spatial index for pharmacy locations. Each node divides space into 4 quadrants enabling O(log n) nearest-neighbour queries.</div>
+        <div class="ds-perf">Time: O(log n) · Space: O(n)</div>
+      </div>
+      <div class="ds-card heap">
+        <div class="ds-name">⊕ Min-Heap</div>
+        <div class="ds-desc">Priority queue sorted by expiry date. Root always contains the most-urgent item, enabling O(1) peek and O(log n) extraction.</div>
+        <div class="ds-perf">Time: O(log n) insert · O(1) peek</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <div class="footer">
+    <div>SmartRx v2.0 — DSA Project Report</div>
+    <div>Generated on ${today} · Confidential</div>
+  </div>
+
+</div>
+</body>
+</html>`;
+
+    // Open in new tab and trigger print
+    const win = window.open('','_blank');
+    win.document.write(html);
+    win.document.close();
+    win.onload = ()=>{ win.focus(); win.print(); };
+    toast('📄 PDF report opened — use browser Print → Save as PDF','ok');
+
+  }catch(e){
+    toast('Could not generate report: '+e.message,'err');
+    console.error(e);
+  }finally{
+    btn.textContent = '🖨️ Download PDF Report';
+    btn.disabled = false;
+  }
+}
+
+// =========================================================================
+// INIT
+// =========================================================================
+window.addEventListener('DOMContentLoaded',()=>{
+  initTheme();
+  initLang();
+
+  // Add shake keyframe dynamically
+  const s = document.createElement('style');
+  s.textContent = `@keyframes shake{0%,100%{transform:translateX(0)}20%,60%{transform:translateX(-8px)}40%,80%{transform:translateX(8px)}}`;
+  document.head.appendChild(s);
+
+  // Restore session if user was already logged in
+  const saved = sessionStorage.getItem('smartrx-user');
+  if(saved){
+    try{
+      currentUser = JSON.parse(saved);
+      document.getElementById('login-overlay').classList.add('hidden');
+      applyRole(currentUser.role);
+      loadStats();
+    }catch(e){
+      sessionStorage.removeItem('smartrx-user');
+    }
+  }
+});
+</script>
+</body>
+</html>

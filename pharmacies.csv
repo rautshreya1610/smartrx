@@ -1,0 +1,16 @@
+pharmacy_id,pharmacy_name,address,area,city,state,pincode,phone,email,owner_name,rating,is_open_24h,latitude,longitude
+1,Apollo Pharmacy MG Road,12 MG Road Near Metro Station,MG Road,Bangalore,Karnataka,560001,080-25001234,apollo.mgroad@apollo.com,Rajesh Kumar,4.7,1,12.9716,77.5946
+2,MedPlus Koramangala,45 5th Block Koramangala,Koramangala,Bangalore,Karnataka,560095,080-26001234,medplus.kora@medplus.in,Priya Sharma,4.5,0,12.9352,77.6245
+3,LifeCare Pharmacy Indiranagar,78 100 Feet Road Indiranagar,Indiranagar,Bangalore,Karnataka,560038,080-25671234,lifecare.indir@gmail.com,Suresh Nair,4.6,0,12.9784,77.6408
+4,Fortis Hospital Pharmacy,Fortis Hospital Cunningham Road,Cunningham Road,Bangalore,Karnataka,560052,080-66214444,fortispharmacy@fortis.com,Hospital Admin,4.8,1,12.9918,77.5997
+5,Generic Medicals Jayanagar,23 4th Block Jayanagar,Jayanagar,Bangalore,Karnataka,560041,080-26531234,generic.jayanagar@gmail.com,Ramesh Gowda,4.3,0,12.9254,77.5832
+6,CityMed Pharmacy HSR Layout,56 Sector 7 HSR Layout,HSR Layout,Bangalore,Karnataka,560102,080-22341234,citymed.hsr@gmail.com,Anita Reddy,4.4,0,12.9116,77.6389
+7,Wellness Pharmacy Whitefield,89 Whitefield Main Road,Whitefield,Bangalore,Karnataka,560066,080-28901234,wellness.whitefield@gmail.com,Mohan Das,4.2,0,12.9698,77.7500
+8,Janatha Medical Marathahalli,34 Outer Ring Road Marathahalli,Marathahalli,Bangalore,Karnataka,560037,080-25431234,janatha.mara@gmail.com,Kavitha B,4.1,0,12.9591,77.7009
+9,Sri Lakshmi Pharmacy BTM Layout,12 2nd Stage BTM Layout,BTM Layout,Bangalore,Karnataka,560076,080-26781234,srilakshmi.btm@gmail.com,Lakshmi Devi,4.5,0,12.9165,77.6101
+10,HealthFirst Electronic City,67 Electronic City Phase 1,Electronic City,Bangalore,Karnataka,560100,080-27801234,healthfirst.ec@gmail.com,Vikram Singh,4.0,0,12.8399,77.6770
+11,Manipal Hospital Pharmacy,98 Old Airport Road Manipal Hospital,Old Airport Road,Bangalore,Karnataka,560017,080-25023456,manipal.pharmacy@manipal.com,Dr. Anand,4.9,1,12.9592,77.6454
+12,Netmeds Pharmacy Malleshwaram,45 18th Cross Malleshwaram,Malleshwaram,Bangalore,Karnataka,560003,080-23451234,netmeds.malle@gmail.com,Shantha Kumar,4.3,0,13.0035,77.5710
+13,MedPlus Rajajinagar,12 1st Block Rajajinagar,Rajajinagar,Bangalore,Karnataka,560010,080-23561234,medplus.raja@medplus.in,Sundar Rao,4.4,0,12.9879,77.5547
+14,PharmEasy Hub Hebbal,34 Hebbal Kempapura Road,Hebbal,Bangalore,Karnataka,560024,080-23671234,pharmeasy.hebbal@gmail.com,Ravi Shankar,4.2,0,13.0358,77.5970
+15,24x7 Pharmacy Bannerghatta,56 Bannerghatta Main Road,Bannerghatta,Bangalore,Karnataka,560029,080-26891234,247pharmacy.bgr@gmail.com,Meera Patel,4.6,1,12.8724,77.5975

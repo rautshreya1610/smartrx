@@ -1,0 +1,133 @@
+medicine_name,generic_name,category,sub_category,description,manufacturer,dosage_form,unit,requires_rx
+Paracetamol,Acetaminophen,Painkiller,Analgesic,Relieves mild to moderate pain and reduces fever,Sun Pharma,tablet,tablet,0
+Paracetamol 500mg,Acetaminophen,Painkiller,Analgesic,Standard dose paracetamol for adults,Cipla,tablet,tablet,0
+Paracetamol 650mg,Acetaminophen,Painkiller,Analgesic,Extended release paracetamol,Dr. Reddy's,tablet,tablet,0
+Paracetamol Syrup,Acetaminophen,Painkiller,Pediatric,Liquid paracetamol for children 125mg/5ml,Abbott,syrup,ml,0
+Paracetamol Drops,Acetaminophen,Painkiller,Pediatric,Infant drops 100mg/ml,Mankind Pharma,drops,ml,0
+Ibuprofen,Ibuprofen,Anti-inflammatory,NSAID,NSAID for pain inflammation and fever,Cipla,tablet,tablet,0
+Ibuprofen 200mg,Ibuprofen,Anti-inflammatory,NSAID,Low dose ibuprofen OTC,Sun Pharma,tablet,tablet,0
+Ibuprofen 400mg,Ibuprofen,Anti-inflammatory,NSAID,Standard NSAID tablet,Dr. Reddy's,tablet,tablet,0
+Ibuprofen 600mg,Ibuprofen,Anti-inflammatory,NSAID,Prescription strength NSAID,Cipla,tablet,tablet,1
+Ibuprofen Gel,Ibuprofen,Anti-inflammatory,Topical,Topical NSAID gel for joint pain,Glaxo,gel,g,0
+Aspirin 75mg,Acetylsalicylic acid,Blood Thinner,Antiplatelet,Low dose antiplatelet for cardiac patients,Bayer,tablet,tablet,1
+Aspirin 325mg,Acetylsalicylic acid,Painkiller,Analgesic,Standard aspirin for pain relief,Bayer,tablet,tablet,0
+Amoxicillin 250mg,Amoxicillin,Antibiotic,Penicillin,Broad-spectrum penicillin for mild infections,Sun Pharma,capsule,capsule,1
+Amoxicillin 500mg,Amoxicillin,Antibiotic,Penicillin,Standard dose amoxicillin,Cipla,capsule,capsule,1
+Amoxicillin Syrup,Amoxicillin,Antibiotic,Pediatric,Amoxicillin suspension 125mg/5ml for children,Dr. Reddy's,syrup,ml,1
+Amoxicillin-Clavulanate,Co-amoxiclav,Antibiotic,Penicillin,Augmented antibiotic for resistant infections,GSK,tablet,tablet,1
+Azithromycin 250mg,Azithromycin,Antibiotic,Macrolide,Macrolide antibiotic 3-day course,Sun Pharma,tablet,tablet,1
+Azithromycin 500mg,Azithromycin,Antibiotic,Macrolide,Single dose azithromycin,Cipla,tablet,tablet,1
+Cetirizine 5mg,Cetirizine,Antihistamine,2nd Generation,Children's antihistamine,Sun Pharma,tablet,tablet,0
+Cetirizine 10mg,Cetirizine,Antihistamine,2nd Generation,Standard antihistamine for adults,Cipla,tablet,tablet,0
+Cetirizine Syrup,Cetirizine,Antihistamine,Pediatric,Antihistamine syrup 5mg/5ml,Abbott,syrup,ml,0
+Loratadine 10mg,Loratadine,Antihistamine,2nd Generation,Non-drowsy 24-hour allergy relief,Bayer,tablet,tablet,0
+Fexofenadine 120mg,Fexofenadine,Antihistamine,2nd Generation,Non-sedating antihistamine,Sanofi,tablet,tablet,0
+Fexofenadine 180mg,Fexofenadine,Antihistamine,2nd Generation,Long-acting antihistamine,Sanofi,tablet,tablet,0
+Metformin 500mg,Metformin,Diabetes,Biguanide,First-line Type 2 diabetes medication,Sun Pharma,tablet,tablet,1
+Metformin 850mg,Metformin,Diabetes,Biguanide,High-dose metformin for diabetes,Cipla,tablet,tablet,1
+Metformin 1000mg,Metformin,Diabetes,Biguanide,Maximum dose metformin,Dr. Reddy's,tablet,tablet,1
+Metformin SR 500mg,Metformin,Diabetes,Biguanide,Slow-release metformin reduces GI side effects,Sun Pharma,tablet,tablet,1
+Glibenclamide 5mg,Glibenclamide,Diabetes,Sulfonylurea,Sulfonylurea for Type 2 diabetes,Cipla,tablet,tablet,1
+Glipizide 5mg,Glipizide,Diabetes,Sulfonylurea,Second generation sulfonylurea,Sun Pharma,tablet,tablet,1
+Sitagliptin 100mg,Sitagliptin,Diabetes,DPP-4 Inhibitor,Incretin-based diabetes therapy,MSD,tablet,tablet,1
+Insulin Glargine,Insulin glargine,Diabetes,Long-acting Insulin,Once-daily basal insulin analogue,Sanofi,injection,unit,1
+Insulin Lispro,Insulin lispro,Diabetes,Rapid-acting Insulin,Meal-time rapid-acting insulin,Eli Lilly,injection,unit,1
+Insulin Regular,Regular insulin,Diabetes,Short-acting Insulin,Standard human insulin,Novo Nordisk,injection,unit,1
+Insulin NPH,NPH insulin,Diabetes,Intermediate Insulin,Intermediate-acting human insulin,Biocon,injection,unit,1
+Omeprazole 20mg,Omeprazole,Antacid,PPI,Proton pump inhibitor for acid reflux,Sun Pharma,capsule,capsule,0
+Omeprazole 40mg,Omeprazole,Antacid,PPI,High-dose PPI for GERD,Cipla,capsule,capsule,1
+Pantoprazole 40mg,Pantoprazole,Antacid,PPI,PPI for gastric ulcers and GERD,Sun Pharma,tablet,tablet,1
+Esomeprazole 20mg,Esomeprazole,Antacid,PPI,Newer PPI with improved acid control,AstraZeneca,capsule,capsule,1
+Ranitidine 150mg,Ranitidine,Antacid,H2 Blocker,H2 receptor antagonist for acid,Cipla,tablet,tablet,0
+Atorvastatin 10mg,Atorvastatin,Cholesterol,Statin,Low-dose statin for mild dyslipidaemia,Sun Pharma,tablet,tablet,1
+Atorvastatin 20mg,Atorvastatin,Cholesterol,Statin,Standard statin dose,Cipla,tablet,tablet,1
+Atorvastatin 40mg,Atorvastatin,Cholesterol,Statin,High-dose statin,Dr. Reddy's,tablet,tablet,1
+Rosuvastatin 10mg,Rosuvastatin,Cholesterol,Statin,Potent statin for high LDL,AstraZeneca,tablet,tablet,1
+Rosuvastatin 20mg,Rosuvastatin,Cholesterol,Statin,High-potency rosuvastatin,AstraZeneca,tablet,tablet,1
+Amlodipine 5mg,Amlodipine,Blood Pressure,CCB,Calcium channel blocker for hypertension,Sun Pharma,tablet,tablet,1
+Amlodipine 10mg,Amlodipine,Blood Pressure,CCB,Higher-dose CCB,Cipla,tablet,tablet,1
+Losartan 50mg,Losartan,Blood Pressure,ARB,ARB for high blood pressure,Merck,tablet,tablet,1
+Losartan 100mg,Losartan,Blood Pressure,ARB,High-dose ARB,Merck,tablet,tablet,1
+Telmisartan 40mg,Telmisartan,Blood Pressure,ARB,Long-acting ARB 24-hour coverage,Boehringer,tablet,tablet,1
+Enalapril 5mg,Enalapril,Blood Pressure,ACE Inhibitor,ACE inhibitor for hypertension,Sun Pharma,tablet,tablet,1
+Lisinopril 10mg,Lisinopril,Blood Pressure,ACE Inhibitor,ACE inhibitor for hypertension & HF,Cipla,tablet,tablet,1
+Metoprolol 25mg,Metoprolol,Blood Pressure,Beta Blocker,Cardioselective beta-1 blocker,Sun Pharma,tablet,tablet,1
+Metoprolol 50mg,Metoprolol,Blood Pressure,Beta Blocker,Standard metoprolol dose,Cipla,tablet,tablet,1
+Atenolol 50mg,Atenolol,Blood Pressure,Beta Blocker,Beta blocker for hypertension,Sun Pharma,tablet,tablet,1
+Clopidogrel 75mg,Clopidogrel,Blood Thinner,Antiplatelet,ADP receptor blocker post-MI,Sanofi,tablet,tablet,1
+Warfarin 2mg,Warfarin,Blood Thinner,Anticoagulant,Vitamin K antagonist anticoagulant,Cipla,tablet,tablet,1
+Warfarin 5mg,Warfarin,Blood Thinner,Anticoagulant,Standard warfarin dose,Cipla,tablet,tablet,1
+Levothyroxine 50mcg,Levothyroxine,Thyroid,Hormone Replacement,Synthetic T4 for hypothyroidism,Abbott,tablet,tablet,1
+Levothyroxine 100mcg,Levothyroxine,Thyroid,Hormone Replacement,Standard levothyroxine dose,Abbott,tablet,tablet,1
+Dexamethasone 0.5mg,Dexamethasone,Steroid,Corticosteroid,Potent anti-inflammatory,Cipla,tablet,tablet,1
+Prednisolone 5mg,Prednisolone,Steroid,Corticosteroid,Oral steroid for inflammation,Sun Pharma,tablet,tablet,1
+Hydrocortisone Cream,Hydrocortisone,Steroid,Topical Corticosteroid,1% cream for skin inflammation,GSK,cream,g,0
+Ciprofloxacin 500mg,Ciprofloxacin,Antibiotic,Fluoroquinolone,Broad-spectrum fluoroquinolone,Cipla,tablet,tablet,1
+Doxycycline 100mg,Doxycycline,Antibiotic,Tetracycline,Tetracycline for infections and acne,Sun Pharma,capsule,capsule,1
+Metronidazole 400mg,Metronidazole,Antibiotic,Nitroimidazole,Anaerobic infections and protozoal,Cipla,tablet,tablet,1
+Clotrimazole Cream,Clotrimazole,Antifungal,Topical,Topical antifungal for skin,Bayer,cream,g,0
+Fluconazole 150mg,Fluconazole,Antifungal,Systemic,Single-dose oral antifungal,Cipla,capsule,capsule,1
+Salbutamol Inhaler,Salbutamol,Respiratory,Bronchodilator,SABA for acute asthma relief,GSK,inhaler,puff,1
+Salbutamol Syrup,Salbutamol,Respiratory,Pediatric Bronchodilator,Oral bronchodilator for children,Abbott,syrup,ml,0
+Montelukast 10mg,Montelukast,Respiratory,Leukotriene Modifier,Asthma prophylaxis once daily,MSD,tablet,tablet,1
+Montelukast 5mg,Montelukast,Respiratory,Pediatric,Asthma prophylaxis for children 6-14y,MSD,chewable tablet,tablet,1
+Budesonide Inhaler,Budesonide,Respiratory,ICS,Inhaled corticosteroid for asthma,AstraZeneca,inhaler,puff,1
+Budesonide-Formoterol,Budesonide+Formoterol,Respiratory,ICS+LABA,Combination inhaler for asthma/COPD,AstraZeneca,inhaler,puff,1
+Ipratropium Inhaler,Ipratropium,Respiratory,Anticholinergic,Bronchodilator for COPD,Boehringer,inhaler,puff,1
+Tramadol 50mg,Tramadol,Painkiller,Opioid Analgesic,Centrally-acting pain reliever,Sun Pharma,capsule,capsule,1
+Diclofenac 50mg,Diclofenac,Anti-inflammatory,NSAID,NSAID for arthritis and pain,Novartis,tablet,tablet,1
+Diclofenac Gel,Diclofenac,Anti-inflammatory,Topical NSAID,Topical pain gel 1%,Novartis,gel,g,0
+Naproxen 250mg,Naproxen,Anti-inflammatory,NSAID,Long-acting NSAID,Cipla,tablet,tablet,0
+Calcium Carbonate 500mg,Calcium carbonate,Supplement,Mineral,Calcium supplement for bone health,Sun Pharma,tablet,tablet,0
+Calcium + Vitamin D3,Calcium carbonate + Cholecalciferol,Supplement,Mineral+Vitamin,Combined calcium and vitamin D,Abbott,tablet,tablet,0
+Vitamin D3 1000IU,Cholecalciferol,Supplement,Vitamin,Vitamin D supplement,Sun Pharma,capsule,capsule,0
+Vitamin D3 60000IU,Cholecalciferol,Supplement,Vitamin,Weekly high-dose vitamin D,Cipla,capsule,capsule,0
+Vitamin B12 500mcg,Cyanocobalamin,Supplement,Vitamin,B12 for nerve health and anemia,Sun Pharma,tablet,tablet,0
+Folic Acid 5mg,Folic acid,Supplement,Vitamin,B9 for pregnancy and anemia,Cipla,tablet,tablet,0
+Ferrous Sulfate,Ferrous sulfate,Supplement,Iron,Oral iron for anemia,Sun Pharma,tablet,tablet,0
+Ferrous Ascorbate,Ferrous ascorbate,Supplement,Iron,Better-tolerated iron supplement,Abbott,tablet,tablet,0
+Zinc Sulfate 20mg,Zinc sulfate,Supplement,Mineral,Zinc for immunity and wound healing,Sun Pharma,tablet,tablet,0
+Ondansetron 4mg,Ondansetron,Anti-nausea,5-HT3 Antagonist,Antiemetic for nausea vomiting,Sun Pharma,tablet,tablet,1
+Ondansetron 8mg,Ondansetron,Anti-nausea,5-HT3 Antagonist,High-dose antiemetic,Cipla,tablet,tablet,1
+Domperidone 10mg,Domperidone,Anti-nausea,Prokinetic,Antiemetic and prokinetic agent,Abbott,tablet,tablet,0
+Metoclopramide 10mg,Metoclopramide,Anti-nausea,Prokinetic,Dopamine antagonist for nausea,Sun Pharma,tablet,tablet,1
+ORS Sachet,Oral rehydration salts,Hydration,Electrolyte,WHO-approved ORS for dehydration,Sun Pharma,sachet,sachet,0
+Loperamide 2mg,Loperamide,Antidiarrheal,Opioid Agonist,Controls acute diarrhea,Johnson & Johnson,capsule,capsule,0
+Bisacodyl 5mg,Bisacodyl,Laxative,Stimulant,Stimulant laxative for constipation,Dulcolax,tablet,tablet,0
+Lactulose Syrup,Lactulose,Laxative,Osmotic,Osmotic laxative syrup,Abbott,syrup,ml,0
+Sertraline 50mg,Sertraline,Antidepressant,SSRI,SSRI for depression and anxiety,Pfizer,tablet,tablet,1
+Fluoxetine 20mg,Fluoxetine,Antidepressant,SSRI,SSRI for depression,Eli Lilly,capsule,capsule,1
+Escitalopram 10mg,Escitalopram,Antidepressant,SSRI,Selective SSRI with fewer side effects,Lundbeck,tablet,tablet,1
+Amitriptyline 25mg,Amitriptyline,Antidepressant,TCA,Tricyclic antidepressant,Sun Pharma,tablet,tablet,1
+Alprazolam 0.25mg,Alprazolam,Anxiolytic,Benzodiazepine,Short-acting benzodiazepine for anxiety,Sun Pharma,tablet,tablet,1
+Clonazepam 0.5mg,Clonazepam,Anxiolytic,Benzodiazepine,Anticonvulsant and anxiolytic,Roche,tablet,tablet,1
+Diazepam 5mg,Diazepam,Anxiolytic,Benzodiazepine,Benzodiazepine for anxiety and seizures,Cipla,tablet,tablet,1
+Gabapentin 300mg,Gabapentin,Neuropathic Pain,Anticonvulsant,Nerve pain and anticonvulsant,Sun Pharma,capsule,capsule,1
+Pregabalin 75mg,Pregabalin,Neuropathic Pain,Anticonvulsant,Calcium channel modulator for pain,Pfizer,capsule,capsule,1
+Phenytoin 100mg,Phenytoin,Anticonvulsant,Sodium Channel Blocker,Epilepsy treatment,Sun Pharma,tablet,tablet,1
+Valproic Acid 200mg,Valproate,Anticonvulsant,GABA Enhancer,Mood stabilizer and anticonvulsant,Abbott,tablet,tablet,1
+Carbamazepine 200mg,Carbamazepine,Anticonvulsant,Sodium Channel Blocker,Epilepsy and neuropathic pain,Sun Pharma,tablet,tablet,1
+Levodopa-Carbidopa,Levodopa+Carbidopa,Parkinson's,Dopamine Precursor,First-line Parkinson's therapy,Abbott,tablet,tablet,1
+Donepezil 5mg,Donepezil,Alzheimer's,Cholinesterase Inhibitor,Dementia symptom management,Pfizer,tablet,tablet,1
+Sildenafil 50mg,Sildenafil,Urology,PDE5 Inhibitor,Erectile dysfunction treatment,Pfizer,tablet,tablet,1
+Tamsulosin 0.4mg,Tamsulosin,Urology,Alpha Blocker,BPH and urinary symptoms,Boehringer,capsule,capsule,1
+Finasteride 5mg,Finasteride,Urology,5-ARI,BPH treatment and hair loss,Cipla,tablet,tablet,1
+Acyclovir 400mg,Acyclovir,Antiviral,DNA Polymerase Inhibitor,Herpes virus treatment,Sun Pharma,tablet,tablet,1
+Oseltamivir 75mg,Oseltamivir,Antiviral,Neuraminidase Inhibitor,Influenza A and B treatment,Roche,capsule,capsule,1
+Hydroxychloroquine 200mg,Hydroxychloroquine,Antimalarial,Quinoline,Antimalarial and autoimmune,Sun Pharma,tablet,tablet,1
+Artemether-Lumefantrine,Artemether+Lumefantrine,Antimalarial,ACT,First-line malaria treatment,Novartis,tablet,tablet,1
+Rifampicin 450mg,Rifampicin,Tuberculosis,Rifamycin,TB core drug,Sun Pharma,capsule,capsule,1
+Isoniazid 300mg,Isoniazid,Tuberculosis,Hydrazide,TB core drug,Cipla,tablet,tablet,1
+Pyrazinamide 500mg,Pyrazinamide,Tuberculosis,Nicotinamide Analogue,TB first-line drug,Sun Pharma,tablet,tablet,1
+Ethambutol 400mg,Ethambutol,Tuberculosis,Arabinosyl Transferase Inhibitor,TB combination drug,Cipla,tablet,tablet,1
+Bromhexine 8mg,Bromhexine,Cough,Mucolytic,Mucolytic for productive cough,Boehringer,tablet,tablet,0
+Ambroxol 30mg,Ambroxol,Cough,Mucolytic,Mucolytic expectorant,Boehringer,tablet,tablet,0
+Dextromethorphan Syrup,Dextromethorphan,Cough,Antitussive,Cough suppressant,Abbott,syrup,ml,0
+Guaifenesin Syrup,Guaifenesin,Cough,Expectorant,Expectorant to thin mucus,Cipla,syrup,ml,0
+Chlorpheniramine 4mg,Chlorpheniramine,Antihistamine,1st Generation,First-gen antihistamine sedating,Sun Pharma,tablet,tablet,0
+Diphenhydramine 25mg,Diphenhydramine,Antihistamine,1st Generation,Antihistamine and sleep aid,Pfizer,capsule,capsule,0
+Povidone Iodine,Povidone iodine,Antiseptic,Topical,Topical antiseptic wound care,Win-Medicare,solution,ml,0
+Betamethasone Cream,Betamethasone,Steroid,Topical Corticosteroid,Potent topical corticosteroid,GSK,cream,g,1
+Mupirocin Ointment,Mupirocin,Antibiotic,Topical,Topical antibiotic for skin infections,GSK,ointment,g,1
+Clindamycin 300mg,Clindamycin,Antibiotic,Lincosamide,Antibiotic for anaerobic infections,Sun Pharma,capsule,capsule,1
+Pantoprazole + Domperidone,Pantoprazole+Domperidone,Antacid,Combination,PPI + prokinetic combination,Sun Pharma,capsule,capsule,1
