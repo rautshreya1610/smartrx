@@ -318,9 +318,9 @@ See `DEPLOYMENT_GUIDE.md` for detailed steps.
 
 ## 👩‍💻 Author
 
-**Shreya Raut**
+**Shweta Raut**
 - 🎓 VIT Pune — Second Year
-- 📧 rautshreya364@gmail.com
+- 📧 shwetadraut01@gmail.com
 
 ---
 
