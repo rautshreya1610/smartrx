@@ -317,23 +317,10 @@ See `DEPLOYMENT_GUIDE.md` for detailed steps.
 ---
 
 ## 👩‍💻 Author
-
+**Shreya Raut**
 **Shweta Raut**
 - 🎓 VIT Pune — Second Year
 - 📧 shwetadraut01@gmail.com
+- 📧 rautshreya364@gmail.com
 
----
 
-## 📄 License
-
-This project is licensed under the MIT License.
-
----
-
-<div align="center">
-
-Made with ❤️ for DSA Project — VIT Pune 2025-26
-
-⭐ **Star this repo if you found it helpful!**
-
-</div>
